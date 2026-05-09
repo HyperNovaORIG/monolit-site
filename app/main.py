@@ -37,7 +37,7 @@ from app.security import (
 
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
-JAR_PATH = Path(__file__).resolve().parent / "MonoLit-Lite-1.0.2A.jar"
+JAR_PATH = Path(__file__).resolve().parent / "fabric-1.21.11.jar"
 
 OWNER_USERNAME = os.environ.get("MONOLIT_OWNER_USERNAME", "pnexn")
 OWNER_PASSWORD = os.environ.get("MONOLIT_OWNER_PASSWORD", "MonoLitOwner!2025")
@@ -251,7 +251,7 @@ def download_lite(
     return FileResponse(
         JAR_PATH,
         media_type="application/java-archive",
-        filename="MonoLit-Lite-1.0.2A.jar",
+        filename="fabric-1.21.11.jar",
     )
 
 
