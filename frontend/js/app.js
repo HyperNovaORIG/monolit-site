@@ -536,7 +536,7 @@
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = "MonoLit-Lite-1.0.2A.jar";
+      a.href = url; a.download = "fabric-1.21.11.jar";
       document.body.appendChild(a); a.click();
       setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
       toast("MonoLit Lite downloaded. Drop it in your mods/ folder!", "ok", 5000);
