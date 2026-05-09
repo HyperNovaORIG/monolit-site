@@ -86,6 +86,16 @@ class LauncherState(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     online: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     downloads_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    monolit_lite_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="1")
+    fabric_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="1")
+    express_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="1")
+    maintenance_mode: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, server_default="0")
+    maintenance_message: Mapped[str] = mapped_column(
+        String(500),
+        default="Site maintenance in progress. We'll be back shortly.",
+        server_default="Site maintenance in progress. We'll be back shortly.",
+        nullable=False,
+    )
     status_message: Mapped[str] = mapped_column(String(255), default="All systems operational.", nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
@@ -118,3 +128,31 @@ class SupportTicket(Base):
 
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
+    _run_lightweight_migrations()
+
+
+def _run_lightweight_migrations() -> None:
+    """Add columns added after the initial deployment, idempotently.
+
+    Both Postgres (Neon) and SQLite support ``ADD COLUMN IF NOT EXISTS``
+    on recent versions; we wrap each statement so a missing column does
+    not abort the whole batch.
+    """
+    from sqlalchemy import text
+
+    statements = [
+        "ALTER TABLE launcher_state ADD COLUMN IF NOT EXISTS monolit_lite_enabled BOOLEAN NOT NULL DEFAULT TRUE",
+        "ALTER TABLE launcher_state ADD COLUMN IF NOT EXISTS fabric_enabled BOOLEAN NOT NULL DEFAULT TRUE",
+        "ALTER TABLE launcher_state ADD COLUMN IF NOT EXISTS express_enabled BOOLEAN NOT NULL DEFAULT TRUE",
+        "ALTER TABLE launcher_state ADD COLUMN IF NOT EXISTS maintenance_mode BOOLEAN NOT NULL DEFAULT FALSE",
+        "ALTER TABLE launcher_state ADD COLUMN IF NOT EXISTS maintenance_message VARCHAR(500) NOT NULL DEFAULT 'Site maintenance in progress. We''ll be back shortly.'",
+    ]
+    # Each statement runs in its own transaction so a failure (e.g. on an older
+    # SQLite without IF NOT EXISTS) does not abort the rest.
+    for stmt in statements:
+        try:
+            with engine.begin() as conn:
+                conn.execute(text(stmt))
+        except Exception:
+            # create_all already added the column on a fresh DB; ignore.
+            pass

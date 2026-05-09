@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download MonoLit — Free</title>
+  <meta name="description" content="Download MonoLit Lite + the fabric-1.21.11.jar. Express bundle, individual files, and a step-by-step animated install guide." />
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="page-download">
+  <!-- Falling pixels background -->
+  <div class="float-particles" id="float-particles" aria-hidden="true"></div>
+
+  <!-- Announcement bar (driven by API) -->
+  <div class="announce-bar" id="announce-bar" hidden>
+    <div class="scroll" id="announce-scroll"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a href="/" class="brand">
+        <img src="/img/logo.svg" alt="MonoLit logo" />
+        <div>
+          <div class="name">MonoLit</div>
+          <div class="tag">Build smarter. Build faster.</div>
+        </div>
+      </a>
+
+      <nav class="nav" id="primary-nav">
+        <a href="/#home">Home</a>
+        <a href="/#features">Features</a>
+        <a href="/#schematics">Schematics</a>
+        <a href="/download" class="active">Download</a>
+        <a href="/#safety">Safety</a>
+        <a href="/#vemix">Creator</a>
+        <a href="/#roadmap">Roadmap</a>
+        <a href="/#support">Support</a>
+      </nav>
+
+      <div class="header-cta">
+        <button class="mc-btn xs menu-toggle" id="menu-toggle">MENU</button>
+        <span class="status-pill" id="status-pill" title="Launcher state">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Online</span>
+        </span>
+        <span id="auth-buttons">
+          <button class="mc-btn sm" id="btn-login">Login</button>
+          <button class="mc-btn sm primary" id="btn-register">Register</button>
+        </span>
+        <span id="user-area" hidden>
+          <button class="user-chip" id="btn-profile" type="button" title="Account">
+            <span id="me-name">player</span>
+            <span class="role User" id="me-role">User</span>
+          </button>
+          <button class="mc-btn sm" id="btn-admin" hidden>Admin</button>
+          <button class="mc-btn sm" id="btn-logout">Logout</button>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- DOWNLOAD HERO -->
+  <section class="block dl-hero">
+    <div class="inner">
+      <h1 class="section-title reveal" style="text-align:center;font-size:48px;">
+        <span class="accent">Download</span> MonoLit
+      </h1>
+      <p class="section-sub reveal" style="text-align:center;">
+        Free. Forever. No license keys, no payment, no email walls.
+      </p>
+
+      <!-- EXPRESS DOWNLOAD CARD -->
+      <div class="dl-express mc-pane reveal" id="express-card">
+        <div class="dl-express-badge pixel">⚡ EXPRESS DOWNLOAD</div>
+        <h2 class="dl-express-title">One click. Everything you need.</h2>
+        <p class="dl-express-sub">
+          Grabs <strong>MonoLit Lite</strong> + <strong>fabric-1.21.11.jar</strong> in one go,
+          and pops the official <strong>Fabric API</strong> Modrinth page so you can grab the matching version for 1.21.11.
+        </p>
+        <ul class="dl-express-list">
+          <li><span class="dl-bullet">①</span> MonoLit-Lite-1.0.2A.jar <span class="dl-size">23,940 bytes</span></li>
+          <li><span class="dl-bullet">②</span> fabric-1.21.11.jar <span class="dl-size">16,811,455 bytes</span></li>
+          <li><span class="dl-bullet">③</span> Fabric API on Modrinth <span class="dl-size">opens in new tab</span></li>
+        </ul>
+        <button class="mc-btn primary lg" id="btn-express">⚡ Express Download — Get It All</button>
+        <div class="dl-express-disabled" id="express-disabled" hidden>
+          <span class="pixel">DISABLED</span>
+          <span id="express-disabled-text">Express download has been temporarily disabled by an admin.</span>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div class="dl-divider reveal">
+        <span class="dl-divider-line"></span>
+        <span class="dl-divider-label pixel">OR PICK INDIVIDUALLY</span>
+        <span class="dl-divider-line"></span>
+      </div>
+
+      <!-- INDIVIDUAL DOWNLOADS -->
+      <div class="dl-cards-grid">
+        <div class="dl-card reveal" id="card-monolit">
+          <div class="dl-card-icon dl-card-icon-monolit" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56">
+              <rect x="6" y="6" width="52" height="52" fill="#5fc63a" stroke="#2d6618" stroke-width="3"/>
+              <rect x="14" y="14" width="36" height="6" fill="#0a1623"/>
+              <rect x="14" y="26" width="36" height="6" fill="#0a1623"/>
+              <rect x="14" y="38" width="22" height="6" fill="#0a1623"/>
+              <rect x="14" y="50" width="36" height="2" fill="#2d6618"/>
+            </svg>
+          </div>
+          <h3>MonoLit Lite</h3>
+          <p class="dl-card-sub">v1.0.2A · Java 21 · Fabric 1.21.11</p>
+          <div class="dl-card-meta">
+            <span>23,940 bytes</span>
+            <span>Free</span>
+          </div>
+          <button class="mc-btn primary" id="btn-download-monolit">Download MonoLit (.jar)</button>
+          <div class="dl-card-disabled" data-slot="monolit" hidden>
+            <span class="pixel">DISABLED</span> by admin
+          </div>
+        </div>
+
+        <div class="dl-card reveal" id="card-fabric">
+          <div class="dl-card-icon dl-card-icon-fabric" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56">
+              <rect x="6" y="6" width="52" height="52" fill="#7fb3ff" stroke="#1d4179" stroke-width="3"/>
+              <path d="M16 16 L48 16 L48 22 L26 22 L26 30 L42 30 L42 36 L26 36 L26 48 L16 48 Z" fill="#0a1623"/>
+            </svg>
+          </div>
+          <h3>fabric-1.21.11.jar</h3>
+          <p class="dl-card-sub">Required companion · 1.21.11 only</p>
+          <div class="dl-card-meta">
+            <span>16,811,455 bytes</span>
+            <span>Free</span>
+          </div>
+          <button class="mc-btn primary" id="btn-download-fabric">Download fabric-1.21.11.jar</button>
+          <div class="dl-card-disabled" data-slot="fabric" hidden>
+            <span class="pixel">DISABLED</span> by admin
+          </div>
+        </div>
+      </div>
+
+      <!-- FABRIC API TUTORIAL -->
+      <div class="block-sub reveal" style="margin-top:60px;">
+        <h2 class="section-title" style="font-size:32px;">Get <span class="accent">Fabric API</span> from Modrinth</h2>
+        <p class="section-sub">
+          MonoLit needs Fabric API to load. We don't host it ourselves — grab the official jar from Modrinth in 30 seconds.
+        </p>
+
+        <div class="fabric-api-tutorial mc-pane">
+          <ol class="fabric-api-steps">
+            <li>
+              <span class="step-num">1</span>
+              <div>
+                <h4>Open the Fabric API page on Modrinth</h4>
+                <p>Click here: <a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noopener" class="link-gold">modrinth.com/mod/fabric-api ↗</a></p>
+              </div>
+            </li>
+            <li>
+              <span class="step-num">2</span>
+              <div>
+                <h4>Filter by Minecraft version</h4>
+                <p>Click the "Versions" tab. In the filter bar, set <strong>Game versions → 1.21.11</strong> and <strong>Loaders → Fabric</strong>.</p>
+              </div>
+            </li>
+            <li>
+              <span class="step-num">3</span>
+              <div>
+                <h4>Download the latest matching version</h4>
+                <p>Hit the green <strong>Download</strong> button on the topmost row. The file looks like <code>fabric-api-0.XXX.X+1.21.11.jar</code>.</p>
+              </div>
+            </li>
+            <li>
+              <span class="step-num">4</span>
+              <div>
+                <h4>Drop it in your <code>mods/</code> folder</h4>
+                <p>The animated guide below shows exactly where the folder lives on Windows / Mac / Linux.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- ANIMATED INSTALL GUIDE -->
+      <div class="block-sub reveal" style="margin-top:60px;">
+        <h2 class="section-title" style="font-size:32px;">Animated <span class="accent">install guide</span></h2>
+        <p class="section-sub">
+          Here's exactly what to download and where to put it. The animation auto-plays — use the arrows to step through manually.
+        </p>
+
+        <div class="install-guide mc-pane" id="install-guide">
+          <!-- TIMELINE -->
+          <div class="ig-timeline">
+            <button class="ig-tl-step active" data-step="0"><span>1</span> Install Fabric Loader</button>
+            <button class="ig-tl-step" data-step="1"><span>2</span> Open mods folder</button>
+            <button class="ig-tl-step" data-step="2"><span>3</span> Drop in 3 jars</button>
+            <button class="ig-tl-step" data-step="3"><span>4</span> Pick Fabric profile</button>
+            <button class="ig-tl-step" data-step="4"><span>5</span> Launch &amp; play</button>
+          </div>
+
+          <!-- STAGE -->
+          <div class="ig-stage">
+            <!-- STEP 1 — Run Fabric Installer -->
+            <div class="ig-scene active" data-scene="0">
+              <div class="ig-scene-title">Step 1 · Run the Fabric Installer</div>
+              <div class="ig-scene-body ig-installer">
+                <div class="ig-window">
+                  <div class="ig-window-bar">
+                    <span class="ig-dot"></span><span class="ig-dot"></span><span class="ig-dot"></span>
+                    <span class="ig-window-title">Fabric Installer</span>
+                  </div>
+                  <div class="ig-window-body">
+                    <div class="ig-form-row"><span>Minecraft Version</span><span class="ig-tag ig-tag-version">1.21.11</span></div>
+                    <div class="ig-form-row"><span>Loader Version</span><span class="ig-tag">latest</span></div>
+                    <div class="ig-form-row"><span>Install Location</span><span class="ig-tag" style="font-size:12px;">~/.minecraft</span></div>
+                    <div class="ig-form-row" style="margin-top:14px;">
+                      <label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" checked disabled /> Create profile</label>
+                    </div>
+                    <button class="ig-mock-btn ig-pulse">Install</button>
+                    <div class="ig-success">✓ Installed. New profile ready.</div>
+                  </div>
+                </div>
+                <p class="ig-hint">Get it from <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener" class="link-gold">fabricmc.net/use/installer ↗</a>. Pick <strong>Client</strong>, version <strong>1.21.11</strong>, hit Install.</p>
+              </div>
+            </div>
+
+            <!-- STEP 2 — Find mods folder -->
+            <div class="ig-scene" data-scene="1">
+              <div class="ig-scene-title">Step 2 · Open your <code>mods</code> folder</div>
+              <div class="ig-scene-body ig-folder-paths">
+                <div class="ig-os-card">
+                  <div class="ig-os-icon">⊞</div>
+                  <div class="ig-os-name">Windows</div>
+                  <code class="ig-path">%APPDATA%\.minecraft\mods\</code>
+                  <p class="ig-os-hint">Press <kbd>Win</kbd>+<kbd>R</kbd>, paste the path, hit Enter.</p>
+                </div>
+                <div class="ig-os-card">
+                  <div class="ig-os-icon">⌘</div>
+                  <div class="ig-os-name">macOS</div>
+                  <code class="ig-path">~/Library/Application Support/minecraft/mods</code>
+                  <p class="ig-os-hint">Finder → Go → "Go to Folder…" → paste.</p>
+                </div>
+                <div class="ig-os-card">
+                  <div class="ig-os-icon">🐧</div>
+                  <div class="ig-os-name">Linux</div>
+                  <code class="ig-path">~/.minecraft/mods</code>
+                  <p class="ig-os-hint">If <code>mods</code> doesn't exist yet, create it: <code>mkdir -p ~/.minecraft/mods</code>.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3 — Drag jars -->
+            <div class="ig-scene" data-scene="2">
+              <div class="ig-scene-title">Step 3 · Drop all 3 jars into <code>mods/</code></div>
+              <div class="ig-scene-body ig-drag-scene">
+                <div class="ig-jars">
+                  <div class="ig-jar ig-jar-monolit"><span class="ig-jar-label">MonoLit-Lite-1.0.2A.jar</span></div>
+                  <div class="ig-jar ig-jar-fabric"><span class="ig-jar-label">fabric-1.21.11.jar</span></div>
+                  <div class="ig-jar ig-jar-api"><span class="ig-jar-label">fabric-api-0.X+1.21.11.jar</span></div>
+                </div>
+                <div class="ig-folder-target">
+                  <div class="ig-folder-icon">📁</div>
+                  <div class="ig-folder-name">mods/</div>
+                  <div class="ig-folder-fill"></div>
+                </div>
+                <p class="ig-hint">Drag all three jars in. Order doesn't matter — Fabric loads them when the game starts.</p>
+              </div>
+            </div>
+
+            <!-- STEP 4 — Pick fabric profile in launcher -->
+            <div class="ig-scene" data-scene="3">
+              <div class="ig-scene-title">Step 4 · Pick the Fabric profile in the Minecraft Launcher</div>
+              <div class="ig-scene-body">
+                <div class="ig-launcher">
+                  <div class="ig-launcher-side">
+                    <div class="ig-launcher-tab">Play</div>
+                    <div class="ig-launcher-tab muted">Installations</div>
+                    <div class="ig-launcher-tab muted">Skins</div>
+                  </div>
+                  <div class="ig-launcher-main">
+                    <div class="ig-launcher-version-row">
+                      <span class="ig-version-label">Version:</span>
+                      <div class="ig-version-select">
+                        <span class="ig-version-pick">fabric-loader-1.21.11</span>
+                        <span class="ig-version-arrow">▾</span>
+                        <ul class="ig-version-dropdown">
+                          <li class="ig-version-item ig-version-active">fabric-loader-1.21.11</li>
+                          <li class="ig-version-item">release 1.21.11</li>
+                          <li class="ig-version-item">release 1.21.10</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <button class="ig-mock-btn ig-mock-play ig-pulse">▶ PLAY</button>
+                  </div>
+                </div>
+                <p class="ig-hint">If you don't see <strong>fabric-loader-1.21.11</strong>, redo Step 1.</p>
+              </div>
+            </div>
+
+            <!-- STEP 5 — In-game -->
+            <div class="ig-scene" data-scene="4">
+              <div class="ig-scene-title">Step 5 · Press <kbd>K</kbd> in-game to open MonoLit</div>
+              <div class="ig-scene-body">
+                <div class="ig-ingame">
+                  <div class="ig-mc-hud">
+                    <div class="ig-hud-bar"><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="ig-hud-watermark pixel">MonoLit · build mode ready</div>
+                    <div class="ig-keyhint"><kbd>K</kbd> open schematic browser</div>
+                  </div>
+                </div>
+                <p class="ig-hint">Hold <kbd>Ctrl</kbd> while placing for Bedrock-style row placement. Hit <kbd>B</kbd> for the auto-builder.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTROLS -->
+          <div class="ig-controls">
+            <button class="mc-btn xs" id="ig-prev">◀ Prev</button>
+            <label class="ig-autoplay">
+              <input type="checkbox" id="ig-autoplay" checked /> Auto-play
+            </label>
+            <button class="mc-btn xs" id="ig-next">Next ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEYBINDS PANE -->
+      <div class="block-sub reveal" style="margin-top:60px;">
+        <h2 class="section-title" style="font-size:32px;">Default <span class="accent">keybinds</span></h2>
+        <div class="mc-pane">
+          <div class="kbd-keybinds-row">
+            <div><kbd>K</kbd><span>Open schematic browser</span></div>
+            <div><kbd>Ctrl</kbd><kbd>+</kbd><span>Bedrock-style line placement</span></div>
+            <div><kbd>Shift</kbd><kbd>+</kbd><span>Mirror placement</span></div>
+            <div><kbd>B</kbd><span>Toggle auto-builder</span></div>
+            <div><kbd>U</kbd><span>Mass undo (last 32 placements)</span></div>
+            <div><kbd>L</kbd><span>Toggle smart-light preview</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK -->
+      <div style="text-align:center;margin-top:48px;">
+        <a class="mc-btn" href="/">← Back to home</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="inner">
+      <div>
+        <div class="brand">
+          <img src="/img/logo.svg" alt="" style="width:40px;height:40px;" />
+          <div>
+            <div class="name">MonoLit</div>
+            <div class="tag">© <span id="year"></span> MonoLit Studio</div>
+          </div>
+        </div>
+        <p class="small" style="max-width:480px;margin-top:14px;">
+          MonoLit is an independent Fabric mod for Minecraft Java Edition.
+          Not affiliated with Mojang or Microsoft. Minecraft is a registered trademark of Mojang AB.
+        </p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/#home">Home</a></li>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/download">Download</a></li>
+          <li><a href="/#vemix">Creator</a></li>
+          <li><a href="/#support">Support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noopener">Fabric API</a></li>
+          <li><a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener">Fabric Installer</a></li>
+          <li><a href="/#safety">Safety / VirusTotal</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AUTH MODAL (shared) -->
+  <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="panel">
+      <button class="x" data-close>X</button>
+      <h2 id="auth-title">Welcome, builder.</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:8px;" id="auth-sub">Register to save your settings and schematic favourites.</p>
+      <div class="tabs" id="auth-tabs">
+        <button class="active" data-tab="register">Register</button>
+        <button data-tab="login">Login</button>
+      </div>
+      <form id="form-register" class="tab-pane active">
+        <label class="field"><span>Nickname (3-16 chars, A-Z 0-9 _)</span>
+          <input type="text" name="username" required minlength="3" maxlength="16" autocomplete="username" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Password (min 6)</span>
+          <input type="password" name="password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Confirm password</span>
+          <input type="password" name="password2" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <div class="alert" id="reg-alert"></div>
+        <button class="mc-btn primary" type="submit" style="margin-top:14px;width:100%;">Create Account</button>
+      </form>
+      <form id="form-login" class="tab-pane">
+        <label class="field"><span>Nickname</span>
+          <input type="text" name="username" required maxlength="64" autocomplete="username" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Password</span>
+          <input type="password" name="password" required maxlength="256" autocomplete="current-password" />
+        </label>
+        <div class="alert" id="login-alert"></div>
+        <button class="mc-btn primary" type="submit" style="margin-top:14px;width:100%;">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD PROGRESS MODAL -->
+  <div class="modal" id="download-modal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2 id="dl-title">Preparing download…</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:14px;" id="dl-sub">Validating block registry and pulling artifacts.</p>
+      <div class="loader-bar"><div class="fill" id="dl-fill"></div></div>
+      <div class="loader-pct" id="dl-pct">0%</div>
+      <div class="loader-step" id="dl-step">Connecting to mirror…</div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/download.js"></script>
+</body>
+</html>

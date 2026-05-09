@@ -27,6 +27,7 @@ from app.security import (
     COOKIE_NAME,
     TOKEN_TTL_HOURS,
     create_token,
+    decode_token,
     get_current_user,
     get_db,
     get_optional_user,
@@ -37,7 +38,22 @@ from app.security import (
 
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
-JAR_PATH = Path(__file__).resolve().parent / "fabric-1.21.11.jar"
+APP_DIR = Path(__file__).resolve().parent
+MONOLIT_LITE_JAR = APP_DIR / "MonoLit-Lite-1.0.2A.jar"
+FABRIC_JAR = APP_DIR / "fabric-1.21.11.jar"
+# Backwards-compat alias used elsewhere.
+JAR_PATH = FABRIC_JAR
+
+MAINTENANCE_ALLOWED_PREFIXES = (
+    "/api/auth/",
+    "/api/admin/",
+    "/api/launcher/state",
+    "/healthz",
+    "/css/",
+    "/js/",
+    "/img/",
+    "/favicon",
+)
 
 OWNER_USERNAME = os.environ.get("MONOLIT_OWNER_USERNAME", "pnexn")
 OWNER_PASSWORD = os.environ.get("MONOLIT_OWNER_PASSWORD", "MonoLitOwner!2025")
@@ -102,6 +118,72 @@ async def add_security_headers(request: Request, call_next):
         "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
     )
     return response
+
+
+def _maintenance_active() -> tuple[bool, str]:
+    try:
+        with SessionLocal() as db:
+            state = db.execute(select(LauncherState).limit(1)).scalar_one_or_none()
+            if state is None:
+                return False, ""
+            return bool(state.maintenance_mode), state.maintenance_message or ""
+    except Exception:
+        return False, ""
+
+
+def _is_staff(request: Request) -> bool:
+    """Best-effort check whether the requester has Dev/Owner role.
+
+    Used to allow admins to keep navigating the site while maintenance is on.
+    """
+    token = request.cookies.get(COOKIE_NAME)
+    if not token:
+        return False
+    try:
+        user_id = decode_token(token)
+    except Exception:
+        return False
+    if user_id is None:
+        return False
+    try:
+        with SessionLocal() as db:
+            user = db.get(User, int(user_id))
+            return user is not None and user.role in {"Dev", "Owner"} and not user.is_banned
+    except Exception:
+        return False
+
+
+@app.middleware("http")
+async def maintenance_gate(request: Request, call_next):
+    path = request.url.path
+    if path.startswith(MAINTENANCE_ALLOWED_PREFIXES):
+        return await call_next(request)
+    active, message = _maintenance_active()
+    if not active:
+        return await call_next(request)
+    if _is_staff(request):
+        return await call_next(request)
+    page = FRONTEND / "maintenance.html"
+    if path.startswith("/api/"):
+        return JSONResponse(
+            status_code=503,
+            content={"detail": message or "Site is under maintenance."},
+        )
+    if page.exists():
+        # Inject the message via simple placeholder substitution.
+        html = page.read_text(encoding="utf-8")
+        html = html.replace(
+            "{{MESSAGE}}",
+            (message or "Site maintenance in progress. We'll be back shortly.")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;"),
+        )
+        return Response(content=html, media_type="text/html", status_code=503)
+    return Response(
+        content=message or "Site is under maintenance.",
+        media_type="text/plain",
+        status_code=503,
+    )
 
 
 def _set_session_cookie(response: Response, user_id: int) -> None:
@@ -228,39 +310,90 @@ def list_announcements(db: Session = Depends(get_db)):
 # ---------------- Download ----------------
 
 
-@app.get("/api/download/lite")
-def download_lite(
-    db: Session = Depends(get_db),
-    user: User | None = Depends(get_optional_user),
-):
-    state = db.execute(select(LauncherState).limit(1)).scalar_one()
-    if not state.downloads_enabled:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-            "Downloads are temporarily disabled by an administrator.",
-        )
+def _download_check(state: LauncherState, user: User | None, *, slot: str) -> None:
     if not state.online:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "MonoLit launcher is currently offline.",
         )
-    if not JAR_PATH.exists():
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Build artifact missing.")
+    if not state.downloads_enabled:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Downloads are temporarily disabled by an administrator.",
+        )
+    if slot == "monolit" and not state.monolit_lite_enabled:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "MonoLit Lite download is currently disabled.",
+        )
+    if slot == "fabric" and not state.fabric_enabled:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Fabric jar download is currently disabled.",
+        )
+    if slot == "express" and not state.express_enabled:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Express download is currently disabled.",
+        )
     if user and user.is_banned:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Your account has been banned.")
+
+
+@app.get("/api/download/monolit")
+def download_monolit(
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    state = db.execute(select(LauncherState).limit(1)).scalar_one()
+    _download_check(state, user, slot="monolit")
+    if not MONOLIT_LITE_JAR.exists():
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Build artifact missing.")
     return FileResponse(
-        JAR_PATH,
+        MONOLIT_LITE_JAR,
+        media_type="application/java-archive",
+        filename="MonoLit-Lite-1.0.2A.jar",
+    )
+
+
+@app.get("/api/download/fabric")
+def download_fabric(
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    state = db.execute(select(LauncherState).limit(1)).scalar_one()
+    _download_check(state, user, slot="fabric")
+    if not FABRIC_JAR.exists():
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Build artifact missing.")
+    return FileResponse(
+        FABRIC_JAR,
         media_type="application/java-archive",
         filename="fabric-1.21.11.jar",
     )
 
 
-@app.get("/api/download/pro")
-def download_pro():
-    raise HTTPException(
-        status.HTTP_423_LOCKED,
-        "MonoLit Pro is still in development. Stay tuned.",
-    )
+@app.get("/api/download/express/check")
+def download_express_check(
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    """Pre-flight check the JS calls before kicking off Express downloads.
+
+    Lets the admin block "express" without disabling individual files, and
+    returns a unified error so the UI can show one toast.
+    """
+    state = db.execute(select(LauncherState).limit(1)).scalar_one()
+    _download_check(state, user, slot="express")
+    return {"ok": True}
+
+
+# Backwards-compat: /api/download/lite kept so any old links still work.
+@app.get("/api/download/lite")
+def download_lite_compat(
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    return download_monolit(db=db, user=user)
 
 
 # ---------------- Support ----------------
@@ -410,6 +543,16 @@ def update_launcher(
         state.online = payload.online
     if payload.downloads_enabled is not None:
         state.downloads_enabled = payload.downloads_enabled
+    if payload.monolit_lite_enabled is not None:
+        state.monolit_lite_enabled = payload.monolit_lite_enabled
+    if payload.fabric_enabled is not None:
+        state.fabric_enabled = payload.fabric_enabled
+    if payload.express_enabled is not None:
+        state.express_enabled = payload.express_enabled
+    if payload.maintenance_mode is not None:
+        state.maintenance_mode = payload.maintenance_mode
+    if payload.maintenance_message is not None:
+        state.maintenance_message = payload.maintenance_message
     if payload.status_message is not None:
         state.status_message = payload.status_message
     db.commit()
@@ -455,6 +598,12 @@ def delete_announcement(
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(FRONTEND / "index.html")
+
+
+@app.get("/download", include_in_schema=False)
+@app.get("/download/", include_in_schema=False)
+def download_page() -> FileResponse:
+    return FileResponse(FRONTEND / "download.html")
 
 
 @app.get("/healthz")

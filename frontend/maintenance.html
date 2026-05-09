@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MonoLit — Maintenance</title>
+  <meta name="description" content="MonoLit is currently undergoing maintenance." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="page-maintenance">
+  <div class="float-particles" id="float-particles" aria-hidden="true"></div>
+
+  <main class="maint-wrap">
+    <div class="maint-card mc-pane">
+      <img class="maint-logo" src="/img/logo.svg" alt="MonoLit" />
+      <div class="maint-pixel-strip" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <h1 class="pixel">Site under maintenance</h1>
+      <p class="maint-message">{{MESSAGE}}</p>
+
+      <div class="maint-bar"><div class="maint-bar-fill"></div></div>
+      <p class="maint-foot">
+        <span class="pixel">⛏</span> The team is working on it. Refresh the page in a few minutes.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      // Spawn a few falling-pixel particles for the same vibe as the main site.
+      var wrap = document.getElementById('float-particles');
+      if (!wrap) return;
+      var palette = ['#7fb3ff', '#5cd6c8', '#5fc63a', '#f5b942'];
+      for (var i = 0; i < 30; i++) {
+        var p = document.createElement('div');
+        p.className = 'p';
+        p.style.left = (Math.random() * 100) + 'vw';
+        p.style.background = palette[i % palette.length];
+        p.style.opacity = (0.08 + Math.random() * 0.18).toFixed(2);
+        p.style.animationDuration = (10 + Math.random() * 18) + 's';
+        p.style.animationDelay = (-Math.random() * 18) + 's';
+        var s = 4 + Math.floor(Math.random() * 10);
+        p.style.width = p.style.height = s + 'px';
+        wrap.appendChild(p);
+      }
+      // Auto-refresh every 60s so visitors come back automatically when the
+      // admin turns maintenance off.
+      setTimeout(function () { window.location.reload(); }, 60000);
+    })();
+  </script>
+</body>
+</html>

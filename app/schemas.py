@@ -49,6 +49,11 @@ class UserAdminOut(UserOut):
 class LauncherStateOut(BaseModel):
     online: bool
     downloads_enabled: bool
+    monolit_lite_enabled: bool
+    fabric_enabled: bool
+    express_enabled: bool
+    maintenance_mode: bool
+    maintenance_message: str
     status_message: str
     updated_at: datetime
 
@@ -58,6 +63,11 @@ class LauncherStateOut(BaseModel):
 class LauncherStateUpdate(BaseModel):
     online: bool | None = None
     downloads_enabled: bool | None = None
+    monolit_lite_enabled: bool | None = None
+    fabric_enabled: bool | None = None
+    express_enabled: bool | None = None
+    maintenance_mode: bool | None = None
+    maintenance_message: str | None = Field(None, max_length=500)
     status_message: str | None = Field(None, max_length=255)
 
 

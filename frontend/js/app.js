@@ -340,19 +340,19 @@
   bindAuthTabs();
 
   // ---------- Auth flows ----------
-  $("#btn-login").addEventListener("click", () => {
+  $("#btn-login")?.addEventListener("click", () => {
     $$("#auth-tabs button").forEach((t) => t.classList.toggle("active", t.dataset.tab === "login"));
     $("#form-register").classList.remove("active");
     $("#form-login").classList.add("active");
     openModal("#auth-modal");
   });
-  $("#btn-register").addEventListener("click", () => {
+  $("#btn-register")?.addEventListener("click", () => {
     $$("#auth-tabs button").forEach((t) => t.classList.toggle("active", t.dataset.tab === "register"));
     $("#form-register").classList.add("active");
     $("#form-login").classList.remove("active");
     openModal("#auth-modal");
   });
-  $("#btn-logout").addEventListener("click", async () => {
+  $("#btn-logout")?.addEventListener("click", async () => {
     await api("/api/auth/logout", { method: "POST" });
     state.me = null;
     renderAuth();
@@ -413,7 +413,7 @@
     $("#form-change-password").reset();
     openModal("#profile-modal");
   }
-  $("#form-change-password").addEventListener("submit", async (e) => {
+  $("#form-change-password")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     const body = {
@@ -440,7 +440,7 @@
     el.classList.toggle("show", !!msg);
   }
 
-  $("#form-register").addEventListener("submit", async (e) => {
+  $("#form-register")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAlert("#reg-alert", "");
     const f = e.target;
@@ -462,7 +462,7 @@
     }
   });
 
-  $("#form-login").addEventListener("submit", async (e) => {
+  $("#form-login")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAlert("#login-alert", "");
     const f = e.target;
@@ -490,64 +490,8 @@
     }, 2200);
   }
 
-  // ---------- Download ----------
-  const dlSteps = [
-    "Connecting to mirror…",
-    "Verifying SHA-256…",
-    "Pulling block registry…",
-    "Compiling Yarn mappings 1.21.11…",
-    "Cross-checking Fabric API compatibility…",
-    "Packing schematics into jar…",
-    "Almost done…",
-    "Finalizing artifact…",
-  ];
-  $("#btn-download-lite").addEventListener("click", async () => {
-    if (!state.launcher.online || !state.launcher.downloads_enabled) {
-      toast("Downloads are temporarily disabled. Try again later.", "err");
-      return;
-    }
-    openModal("#download-modal");
-    const fill = $("#dl-fill"), pct = $("#dl-pct"), step = $("#dl-step");
-    fill.style.width = "0%"; pct.textContent = "0%"; step.textContent = dlSteps[0];
-    let p = 0, idx = 0;
-    await new Promise((resolve) => {
-      const tick = () => {
-        const inc = 3 + Math.random() * 9;
-        p = Math.min(100, p + inc);
-        fill.style.width = p + "%";
-        pct.textContent = Math.floor(p) + "%";
-        if (Math.random() < 0.55) {
-          idx = (idx + 1) % dlSteps.length;
-          step.textContent = dlSteps[idx];
-        }
-        if (p < 100) setTimeout(tick, 160 + Math.random() * 220);
-        else resolve();
-      };
-      tick();
-    });
-    step.textContent = "Sending file…";
-    // Real download
-    try {
-      const res = await fetch(apiUrl("/api/download/lite"), { credentials: "same-origin" });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error((data && data.detail) || `Download failed (${res.status})`);
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = "fabric-1.21.11.jar";
-      document.body.appendChild(a); a.click();
-      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
-      toast("MonoLit Lite downloaded. Drop it in your mods/ folder!", "ok", 5000);
-    } catch (err) {
-      toast(err.message, "err", 5000);
-    }
-    setTimeout(() => closeModal("#download-modal"), 600);
-  });
-
   // ---------- Support form ----------
-  $("#support-form").addEventListener("submit", async (e) => {
+  $("#support-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAlert("#support-alert", "");
     const fd = new FormData(e.target);
@@ -563,11 +507,18 @@
   });
 
   // ---------- Admin ----------
-  $("#btn-admin").addEventListener("click", () => {
+  $("#btn-admin")?.addEventListener("click", () => {
     if (!state.me || (state.me.role !== "Dev" && state.me.role !== "Owner")) return;
+    if (!$("#admin-modal")) {
+      // Page doesn't include the admin console (e.g. /download); jump home.
+      window.location.href = "/?admin=1";
+      return;
+    }
     const tag = $("#admin-role-tag");
-    tag.textContent = state.me.role;
-    tag.className = "role " + state.me.role;
+    if (tag) {
+      tag.textContent = state.me.role;
+      tag.className = "role " + state.me.role;
+    }
     // Owner-only tabs
     $$("#admin-tabs button").forEach((b) => {
       if (b.dataset.ownerOnly !== undefined) {
@@ -578,30 +529,80 @@
     loadLauncherState();
     loadBroadcasts();
   });
-  bindTabs($("#admin-tabs"), $("#admin-modal"));
+  if ($("#admin-tabs") && $("#admin-modal")) {
+    bindTabs($("#admin-tabs"), $("#admin-modal"));
+  }
+  // Auto-open admin modal when redirected from another page with ?admin=1.
+  if (location.search.includes("admin=1") && $("#btn-admin")) {
+    const openWhenReady = () => {
+      if (state.me && (state.me.role === "Dev" || state.me.role === "Owner")) {
+        $("#btn-admin").click();
+        // Clean up the URL so a refresh doesn't keep re-opening it.
+        const url = new URL(window.location.href);
+        url.searchParams.delete("admin");
+        window.history.replaceState({}, "", url.toString());
+      } else {
+        setTimeout(openWhenReady, 200);
+      }
+    };
+    setTimeout(openWhenReady, 400);
+  }
 
   async function loadLauncherState() {
     const s = await api("/api/launcher/state");
     state.launcher = s;
-    $("#ls-online").checked = s.online;
-    $("#ls-downloads").checked = s.downloads_enabled;
-    $("#ls-msg").value = s.status_message || "";
+    if ($("#ls-online")) $("#ls-online").checked = s.online;
+    if ($("#ls-downloads")) $("#ls-downloads").checked = s.downloads_enabled;
+    if ($("#ls-msg")) $("#ls-msg").value = s.status_message || "";
+    if ($("#ls-monolit")) $("#ls-monolit").checked = s.monolit_lite_enabled !== false;
+    if ($("#ls-fabric")) $("#ls-fabric").checked = s.fabric_enabled !== false;
+    if ($("#ls-express")) $("#ls-express").checked = s.express_enabled !== false;
+    if ($("#ls-maintenance")) $("#ls-maintenance").checked = !!s.maintenance_mode;
+    if ($("#ls-maint-msg")) $("#ls-maint-msg").value = s.maintenance_message || "";
     renderLauncher();
   }
-  $("#ls-save").addEventListener("click", async () => {
+  async function saveLauncherPatch(payload, okMsg) {
     try {
       const updated = await api("/api/admin/launcher", {
         method: "POST",
-        body: JSON.stringify({
-          online: $("#ls-online").checked,
-          downloads_enabled: $("#ls-downloads").checked,
-          status_message: $("#ls-msg").value,
-        }),
+        body: JSON.stringify(payload),
       });
       state.launcher = updated;
+      // Re-sync UI in case the server normalized any value.
+      if ($("#ls-online")) $("#ls-online").checked = updated.online;
+      if ($("#ls-downloads")) $("#ls-downloads").checked = updated.downloads_enabled;
+      if ($("#ls-msg")) $("#ls-msg").value = updated.status_message || "";
+      if ($("#ls-monolit")) $("#ls-monolit").checked = updated.monolit_lite_enabled !== false;
+      if ($("#ls-fabric")) $("#ls-fabric").checked = updated.fabric_enabled !== false;
+      if ($("#ls-express")) $("#ls-express").checked = updated.express_enabled !== false;
+      if ($("#ls-maintenance")) $("#ls-maintenance").checked = !!updated.maintenance_mode;
+      if ($("#ls-maint-msg")) $("#ls-maint-msg").value = updated.maintenance_message || "";
       renderLauncher();
-      toast("Launcher state updated.", "ok");
+      toast(okMsg, "ok");
     } catch (err) { toast(err.message, "err"); }
+  }
+  $("#ls-save")?.addEventListener("click", () => {
+    saveLauncherPatch({
+      online: $("#ls-online").checked,
+      downloads_enabled: $("#ls-downloads").checked,
+      status_message: $("#ls-msg").value,
+    }, "Launcher state updated.");
+  });
+  $("#ls-save-mods")?.addEventListener("click", () => {
+    saveLauncherPatch({
+      monolit_lite_enabled: $("#ls-monolit").checked,
+      fabric_enabled: $("#ls-fabric").checked,
+      express_enabled: $("#ls-express").checked,
+    }, "Per-mod download switches saved.");
+  });
+  $("#ls-save-maint")?.addEventListener("click", () => {
+    const msg = $("#ls-maint-msg").value.trim();
+    saveLauncherPatch({
+      maintenance_mode: $("#ls-maintenance").checked,
+      maintenance_message: msg || "Site maintenance in progress. We'll be back shortly.",
+    }, $("#ls-maintenance").checked
+      ? "Maintenance mode ENABLED. Visitors now see the maintenance page."
+      : "Maintenance mode disabled. Site is live again.");
   });
 
   async function loadBroadcasts() {
@@ -635,7 +636,7 @@
       })
     );
   }
-  $("#bc-send").addEventListener("click", async () => {
+  $("#bc-send")?.addEventListener("click", async () => {
     const body = $("#bc-body").value.trim();
     if (!body) { toast("Write a message first.", "err"); return; }
     try {
@@ -729,7 +730,7 @@
     });
   }
 
-  $("#create-form").addEventListener("submit", async (e) => {
+  $("#create-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAlert("#create-alert", "");
     const f = e.target;
@@ -799,11 +800,11 @@
       setInterval(refreshMe, 30000);
     });
 
-  $("#footer-changelog").addEventListener("click", (e) => {
+  $("#footer-changelog")?.addEventListener("click", (e) => {
     e.preventDefault();
     toast("v1.0.2A · Bedrock placement on slabs · Wheat farm schematic added · Donut server profile.", "info", 5000);
   });
-  $("#footer-status").addEventListener("click", (e) => {
+  $("#footer-status")?.addEventListener("click", (e) => {
     e.preventDefault();
     toast(`${state.launcher.online ? "Online" : "Offline"} — ${state.launcher.status_message}`, state.launcher.online ? "ok" : "err", 5000);
   });
