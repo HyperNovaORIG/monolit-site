@@ -128,6 +128,7 @@ img, svg { image-rendering: pixelated; image-rendering: -moz-crisp-edges; }
 
 .mc-btn.sm { padding: 8px 14px; font-size: 10px; }
 .mc-btn.xs { padding: 6px 10px; font-size: 9px; }
+.mc-btn.lg { padding: 18px 32px; font-size: 14px; }
 
 /* HEADER */
 .site-header {
@@ -1480,3 +1481,868 @@ button.user-chip:hover { border-color: var(--diamond); }
   .feature-grid { grid-template-columns: 1fr; }
 }
 .menu-toggle { display: none; }
+
+/* ==========================================================
+   DOWNLOAD CTA on home page
+   ========================================================== */
+.dl-cta-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 26px 28px;
+}
+.dl-cta-text { min-width: 0; }
+.dl-cta-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dl-cta-meta span {
+  display: inline-block;
+  background: rgba(127, 179, 255, 0.12);
+  border: 2px solid var(--blueprint-line);
+  color: var(--blueprint-line);
+  padding: 4px 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.kbd-keybinds-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 18px;
+  font-size: 16px;
+}
+.kbd-keybinds-row > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kbd-keybinds-row kbd {
+  display: inline-block;
+  padding: 4px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 2px solid var(--pane-border);
+  border-top-color: #4a608a;
+  border-bottom-color: #1a2540;
+}
+@media (max-width: 720px) {
+  .dl-cta-card { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================
+   /download — Express card
+   ========================================================== */
+.page-download .dl-hero { padding-top: 60px; }
+.dl-express {
+  position: relative;
+  margin-top: 36px;
+  padding: 42px 36px 36px;
+  text-align: center;
+  border: 4px solid var(--gold);
+  background:
+    linear-gradient(135deg, rgba(245, 185, 66, 0.18) 0%, rgba(245, 185, 66, 0.06) 60%, rgba(20, 30, 50, 0.90) 100%);
+  overflow: hidden;
+}
+.dl-express::before,
+.dl-express::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 185, 66, 0.25) 0%, rgba(245, 185, 66, 0) 70%);
+  pointer-events: none;
+  animation: expressGlow 6s ease-in-out infinite alternate;
+}
+.dl-express::before { top: -80px; left: -80px; }
+.dl-express::after  { bottom: -80px; right: -80px; animation-delay: 2s; }
+@keyframes expressGlow {
+  from { transform: scale(0.9); opacity: 0.6; }
+  to   { transform: scale(1.15); opacity: 1; }
+}
+.dl-express-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: #2a1a02;
+  padding: 8px 14px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  border: 3px solid #fff5cf;
+  border-bottom-color: #b07a14;
+  border-right-color: #b07a14;
+}
+.dl-express-title {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.dl-express-sub {
+  font-size: 18px;
+  color: var(--text-dim);
+  max-width: 600px;
+  margin: 0 auto 18px;
+}
+.dl-express-list {
+  list-style: none;
+  margin: 18px auto 22px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.dl-express-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(20, 30, 50, 0.6);
+  border-left: 3px solid var(--gold);
+  font-size: 17px;
+}
+.dl-express-list .dl-bullet {
+  color: var(--gold);
+  font-weight: bold;
+  font-size: 22px;
+  width: 26px;
+  display: inline-block;
+}
+.dl-express-list .dl-size {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.dl-express .mc-btn.primary.lg {
+  background: linear-gradient(180deg, var(--gold) 0%, #c98a1f 100%);
+  border-color: #6a4108;
+  border-top-color: #ffe39a;
+  color: #2a1a02;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.dl-express-disabled {
+  margin-top: 16px;
+  padding: 10px;
+  background: rgba(216, 58, 58, 0.15);
+  border: 2px solid var(--redstone);
+  color: var(--redstone);
+  font-size: 16px;
+}
+.dl-express-disabled .pixel { font-size: 9px; margin-right: 8px; }
+
+/* DIVIDER between Express and individual */
+.dl-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 36px 0 18px;
+  color: var(--text-dim);
+}
+.dl-divider-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pane-border) 30%, var(--pane-border) 70%, transparent);
+}
+.dl-divider-label { font-size: 10px; letter-spacing: 1px; }
+
+/* INDIVIDUAL CARDS */
+.dl-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.dl-card {
+  position: relative;
+  padding: 24px;
+  background: var(--pane-bg);
+  border: 3px solid var(--pane-border);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.dl-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--blueprint-line);
+  box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.3);
+}
+.dl-card.dl-disabled {
+  opacity: 0.55;
+  filter: saturate(0.6);
+}
+.dl-card-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-2);
+  border: 2px solid var(--pane-border);
+}
+.dl-card h3 { font-size: 22px; margin-top: 4px; }
+.dl-card-sub { color: var(--text-dim); font-size: 16px; }
+.dl-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.dl-card-meta span {
+  display: inline-block;
+  background: var(--bg-2);
+  padding: 4px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  border: 2px solid var(--pane-border);
+}
+.dl-card .mc-btn { width: 100%; margin-top: 8px; }
+.dl-card-disabled {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(216, 58, 58, 0.15);
+  border: 2px solid var(--redstone);
+  color: var(--redstone);
+  font-size: 14px;
+}
+.dl-card-disabled .pixel { font-size: 8px; }
+
+/* Sub-block heading */
+.block-sub { padding: 20px 0; }
+.block-sub .section-title { text-align: left; margin-bottom: 6px; }
+.block-sub .section-sub { text-align: left; margin-bottom: 16px; }
+.link-gold { color: var(--gold); text-decoration: underline; }
+.link-gold:hover { color: #ffe39a; }
+
+/* FABRIC API TUTORIAL */
+.fabric-api-tutorial { padding: 24px; }
+.fabric-api-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.fabric-api-steps li {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.fabric-api-steps .step-num {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gold);
+  color: #2a1a02;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  border: 3px solid #6a4108;
+  border-top-color: #ffe39a;
+}
+.fabric-api-steps h4 { font-size: 19px; margin-bottom: 4px; }
+.fabric-api-steps p { color: var(--text-dim); font-size: 17px; }
+
+/* ==========================================================
+   ANIMATED INSTALL GUIDE
+   ========================================================== */
+.install-guide { padding: 24px; }
+.ig-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid var(--pane-border);
+  padding-bottom: 16px;
+}
+.ig-tl-step {
+  flex: 1 1 130px;
+  background: var(--bg-2);
+  border: 2px solid var(--pane-border);
+  color: var(--text-dim);
+  padding: 10px 12px;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.ig-tl-step:hover { color: var(--text); border-color: var(--blueprint-line); }
+.ig-tl-step.active {
+  background: linear-gradient(180deg, rgba(127, 179, 255, 0.16) 0%, rgba(127, 179, 255, 0.04) 100%);
+  border-color: var(--blueprint-line);
+  color: var(--text);
+}
+.ig-tl-step span:first-child {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blueprint-line);
+  color: var(--blueprint);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.ig-stage {
+  position: relative;
+  min-height: 360px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(127, 179, 255, 0.04) 0 24px,
+      rgba(127, 179, 255, 0.06) 24px 25px
+    ),
+    var(--blueprint);
+  border: 2px solid var(--pane-border);
+  padding: 28px;
+  overflow: hidden;
+}
+.ig-scene {
+  position: absolute;
+  inset: 28px;
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+.ig-scene.active {
+  display: flex;
+  animation: igFadeIn 0.5s ease-out;
+}
+@keyframes igFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ig-scene-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+.ig-scene-title code {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--diamond);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0 6px;
+  letter-spacing: 0;
+}
+.ig-scene-body { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.ig-hint { color: var(--text-dim); font-size: 16px; }
+
+/* Step 1 — Installer window */
+.ig-installer { align-items: center; }
+.ig-window {
+  width: 100%;
+  max-width: 460px;
+  background: #1d2d49;
+  border: 3px solid #4a608a;
+  border-top-color: #6a82af;
+  border-bottom-color: #14213a;
+  box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 0.45);
+  margin: 0 auto;
+}
+.ig-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #14213a;
+  border-bottom: 2px solid #4a608a;
+}
+.ig-dot {
+  width: 10px; height: 10px;
+  background: var(--redstone);
+  border: 1px solid #000;
+}
+.ig-dot:nth-child(2) { background: var(--gold); }
+.ig-dot:nth-child(3) { background: var(--xp); }
+.ig-window-title {
+  margin-left: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+}
+.ig-window-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.ig-form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: var(--text);
+}
+.ig-tag {
+  background: var(--bg-2);
+  border: 2px solid var(--pane-border);
+  padding: 4px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--blueprint-line);
+}
+.ig-tag-version {
+  background: var(--gold);
+  color: #2a1a02;
+  border-color: #6a4108;
+  border-top-color: #ffe39a;
+  animation: igHighlight 1.6s ease-in-out infinite alternate;
+}
+@keyframes igHighlight {
+  from { box-shadow: 0 0 0 0 rgba(245, 185, 66, 0.6); }
+  to   { box-shadow: 0 0 0 8px rgba(245, 185, 66, 0); }
+}
+.ig-mock-btn {
+  align-self: flex-start;
+  background: linear-gradient(180deg, var(--xp) 0%, #38932a 100%);
+  border: 3px solid #1a4912;
+  border-top-color: #b6f29c;
+  color: #0a3505;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+.ig-pulse {
+  animation: igPulse 1.6s ease-in-out infinite;
+}
+@keyframes igPulse {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(0, -3px); }
+}
+.ig-mock-play {
+  background: linear-gradient(180deg, var(--xp) 0%, #2d7d22 100%);
+  font-size: 13px;
+  padding: 14px 32px;
+  margin-top: 16px;
+}
+.ig-success {
+  margin-top: 6px;
+  font-size: 16px;
+  color: var(--xp);
+  opacity: 0;
+  animation: igFadeUp 0.5s ease-out 1.6s forwards;
+}
+@keyframes igFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Step 2 — OS folder cards */
+.ig-folder-paths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.ig-os-card {
+  background: rgba(20, 30, 50, 0.85);
+  border: 2px solid var(--pane-border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  animation: igFadeIn 0.5s ease-out;
+}
+.ig-os-card:nth-child(2) { animation-delay: 0.15s; animation-fill-mode: backwards; }
+.ig-os-card:nth-child(3) { animation-delay: 0.3s; animation-fill-mode: backwards; }
+.ig-os-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blueprint-line);
+  color: var(--blueprint);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+}
+.ig-os-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--gold);
+}
+.ig-path {
+  display: block;
+  background: var(--bg-2);
+  padding: 6px 8px;
+  border: 2px solid var(--pane-border);
+  font-size: 14px;
+  word-break: break-all;
+}
+.ig-os-hint { color: var(--text-dim); font-size: 15px; }
+.ig-os-hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--pane-border);
+  margin: 0 2px;
+}
+
+/* Step 3 — drag jars into folder */
+.ig-drag-scene {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 24px;
+  align-items: center;
+}
+.ig-jars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ig-jar {
+  width: 100%;
+  height: 56px;
+  background: linear-gradient(180deg, #5fc63a 0%, #2d6618 100%);
+  border: 3px solid #1a4912;
+  border-top-color: #b6f29c;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #0a3505;
+  position: relative;
+  animation: igDrop 4s ease-in-out infinite;
+}
+.ig-jar-fabric {
+  background: linear-gradient(180deg, #7fb3ff 0%, #1d4179 100%);
+  border-color: #14213a;
+  border-top-color: #b6d4ff;
+  color: #0a1c3b;
+  animation-delay: 0.6s;
+}
+.ig-jar-api {
+  background: linear-gradient(180deg, #c896ff 0%, #4f1d96 100%);
+  border-color: #2a0d56;
+  border-top-color: #e3c8ff;
+  color: #1a063a;
+  animation-delay: 1.2s;
+}
+@keyframes igDrop {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(40px, 8px) rotate(2deg); }
+  40% { transform: translate(140px, 20px) rotate(0); opacity: 1; }
+  50% { transform: translate(180px, 24px) rotate(0); opacity: 0; }
+  51%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+.ig-folder-target {
+  position: relative;
+  width: 200px;
+  height: 160px;
+  margin: 0 auto;
+  border: 3px solid var(--gold);
+  background: rgba(245, 185, 66, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.ig-folder-icon { font-size: 56px; line-height: 1; }
+.ig-folder-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--gold);
+}
+.ig-folder-fill {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 0;
+  background: linear-gradient(0deg, rgba(95, 198, 58, 0.45) 0%, rgba(95, 198, 58, 0) 100%);
+  animation: igFolderFill 4s ease-in-out infinite;
+}
+@keyframes igFolderFill {
+  0%, 30% { height: 0; }
+  60% { height: 90%; }
+  100% { height: 90%; }
+}
+
+/* Step 4 — Minecraft launcher mockup */
+.ig-launcher {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  background: #14213a;
+  border: 3px solid #4a608a;
+  border-top-color: #6a82af;
+  border-bottom-color: #0a1320;
+  min-height: 220px;
+  box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 0.45);
+}
+.ig-launcher-side {
+  background: #0e1a30;
+  padding: 14px 0;
+  border-right: 2px solid #4a608a;
+}
+.ig-launcher-tab {
+  padding: 12px 18px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--text);
+  background: rgba(127, 179, 255, 0.10);
+  border-left: 4px solid var(--blueprint-line);
+}
+.ig-launcher-tab.muted {
+  background: transparent;
+  border-left-color: transparent;
+  color: var(--text-dim);
+}
+.ig-launcher-main {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+}
+.ig-launcher-version-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ig-version-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.ig-version-select {
+  position: relative;
+  background: #0a1623;
+  border: 2px solid var(--blueprint-line);
+  padding: 8px 32px 8px 12px;
+  font-size: 17px;
+  color: var(--blueprint-line);
+  flex: 1;
+  max-width: 280px;
+}
+.ig-version-arrow {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--blueprint-line);
+}
+.ig-version-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: -2px; right: -2px;
+  background: #0a1623;
+  border: 2px solid var(--blueprint-line);
+  list-style: none;
+  z-index: 2;
+  animation: igDropdown 4s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes igDropdown {
+  0%, 30% { opacity: 0; transform: translateY(-6px); }
+  35%, 75% { opacity: 1; transform: translateY(0); }
+  80%, 100% { opacity: 0; transform: translateY(-6px); }
+}
+.ig-version-item {
+  padding: 8px 12px;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+.ig-version-active {
+  background: rgba(95, 198, 58, 0.18);
+  color: var(--xp);
+  border-left: 4px solid var(--xp);
+}
+
+/* Step 5 — in-game preview */
+.ig-ingame {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #6ab0ff 0%, #3d7ad3 35%, #5fc63a 36%, #4f8b34 100%);
+  border: 3px solid #14213a;
+}
+.ig-mc-hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+}
+.ig-hud-bar {
+  display: flex;
+  gap: 4px;
+  align-self: flex-start;
+  margin-bottom: auto;
+}
+.ig-hud-bar span {
+  width: 22px; height: 22px;
+  background: var(--bg-2);
+  border: 2px solid #1a1a1a;
+  box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+.ig-hud-watermark {
+  align-self: center;
+  color: #fff;
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 6px 12px;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 0 #000;
+  animation: igFadeIn 0.6s ease-out 0.4s backwards;
+}
+.ig-keyhint {
+  align-self: flex-end;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #fff;
+}
+.ig-keyhint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--pane-border);
+  margin-right: 4px;
+}
+
+/* Controls below the stage */
+.ig-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  gap: 12px;
+}
+.ig-autoplay {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+.ig-autoplay input { width: auto; }
+
+/* Responsive tweaks for /download */
+@media (max-width: 720px) {
+  .dl-express { padding: 28px 18px; }
+  .dl-express-title { font-size: 22px; }
+  .ig-stage { padding: 16px; min-height: 420px; }
+  .ig-scene { inset: 16px; }
+  .ig-drag-scene { grid-template-columns: 1fr; }
+  .ig-folder-target { width: 100%; }
+}
+
+/* ==========================================================
+   MAINTENANCE PAGE
+   ========================================================== */
+body.page-maintenance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+.maint-wrap {
+  width: 100%;
+  max-width: 640px;
+}
+.maint-card {
+  text-align: center;
+  padding: 48px 32px;
+  border-color: var(--gold);
+  border-width: 4px;
+  background:
+    linear-gradient(135deg, rgba(245, 185, 66, 0.08) 0%, rgba(20, 30, 50, 0.92) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.maint-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(245, 185, 66, 0.04) 0 12px,
+      rgba(245, 185, 66, 0) 12px 24px
+    );
+  pointer-events: none;
+}
+.maint-logo {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  margin: 0 auto 16px;
+  display: block;
+  animation: igPulse 2.4s ease-in-out infinite;
+}
+.maint-pixel-strip {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.maint-pixel-strip span {
+  width: 14px;
+  height: 14px;
+  background: var(--gold);
+  animation: maintBlink 1.2s ease-in-out infinite;
+}
+.maint-pixel-strip span:nth-child(1) { animation-delay: 0s; }
+.maint-pixel-strip span:nth-child(2) { animation-delay: 0.1s; background: var(--xp); }
+.maint-pixel-strip span:nth-child(3) { animation-delay: 0.2s; background: var(--diamond); }
+.maint-pixel-strip span:nth-child(4) { animation-delay: 0.3s; background: var(--blueprint-line); }
+.maint-pixel-strip span:nth-child(5) { animation-delay: 0.4s; background: var(--blueprint-line); }
+.maint-pixel-strip span:nth-child(6) { animation-delay: 0.5s; background: var(--diamond); }
+.maint-pixel-strip span:nth-child(7) { animation-delay: 0.6s; background: var(--xp); }
+.maint-pixel-strip span:nth-child(8) { animation-delay: 0.7s; }
+@keyframes maintBlink {
+  0%, 60%, 100% { opacity: 1; transform: scale(1); }
+  30% { opacity: 0.3; transform: scale(0.8); }
+}
+.maint-card h1 {
+  font-size: 18px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.maint-message {
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+.maint-bar {
+  height: 14px;
+  background: var(--bg);
+  border: 2px solid var(--pane-border);
+  margin: 0 auto 16px;
+  max-width: 360px;
+  overflow: hidden;
+}
+.maint-bar-fill {
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--xp) 100%);
+  animation: maintBar 2.4s ease-in-out infinite;
+}
+@keyframes maintBar {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(420%); }
+}
+.maint-foot {
+  font-size: 16px;
+  color: var(--text-dim);
+}
