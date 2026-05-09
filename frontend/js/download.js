@@ -59,9 +59,10 @@
     setSlot("monolit", !masterOff && s.monolit_lite_enabled);
     setSlot("fabric",  !masterOff && s.fabric_enabled);
 
-    const expressOff =
-      masterOff || !s.express_enabled ||
-      !s.monolit_lite_enabled || !s.fabric_enabled;
+    // Express bundle is its own pre-packaged archive — independent of the
+    // per-mod switches, only blocked by the master switch or the admin's
+    // dedicated express toggle.
+    const expressOff = masterOff || !s.express_enabled;
     const expressBtn = document.querySelector("#btn-express");
     const expressFlag = document.querySelector("#express-disabled");
     const expressCard = document.querySelector("#express-card");
@@ -76,11 +77,7 @@
             ? "Launcher is currently offline."
             : !s.downloads_enabled
             ? "Downloads are temporarily disabled by an admin."
-            : !s.express_enabled
-            ? "Express download has been temporarily disabled by an admin."
-            : !s.monolit_lite_enabled
-            ? "MonoLit Lite is disabled — Express needs both files."
-            : "fabric-1.21.11.jar is disabled — Express needs both files.";
+            : "Express download has been temporarily disabled by an admin.";
         }
       } else {
         expressCard.classList.remove("dl-disabled");
@@ -186,31 +183,20 @@
 
     openModal("#download-modal");
     try {
-      await fakeProgress("Express download…", "Bundling MonoLit Lite + fabric-1.21.11.jar.", 2000);
-
-      // Open Modrinth Fabric API tab first — pop-up blockers tolerate this
-      // when it happens directly inside a click handler.
-      let fabricApiTab = null;
-      try {
-        fabricApiTab = window.open("https://modrinth.com/mod/fabric-api/versions?g=1.21.11&l=fabric", "_blank", "noopener");
-      } catch (_) { /* */ }
-
-      // Sequential downloads — browsers usually batch-allow files initiated
-      // shortly after a user gesture.
-      $("#dl-step").textContent = "Sending MonoLit-Lite-1.0.2A.jar…";
-      await downloadFile("monolit", "MonoLit-Lite-1.0.2A.jar");
-      await new Promise((r) => setTimeout(r, 350));
-      $("#dl-step").textContent = "Sending fabric-1.21.11.jar…";
-      await downloadFile("fabric", "fabric-1.21.11.jar");
-
-      if (!fabricApiTab) {
-        localToast("Pop-up blocked — open Fabric API on Modrinth manually.", "info", 6000);
-      }
-      localToast("Express download complete. Both jars saved!", "ok", 5500);
+      await fakeProgress("Express download…", "Preparing MonoLit.rar (everything in one archive).", 1400);
+      $("#dl-step").textContent = "Sending MonoLit.rar…";
+      const a = document.createElement("a");
+      a.href = apiUrl("/api/download/express");
+      a.download = "MonoLit.rar";
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      localToast("Express download started — saving MonoLit.rar.", "ok", 5500);
     } catch (err) {
       localToast(err.message, "err", 5000);
     } finally {
-      setTimeout(() => closeModal("#download-modal"), 600);
+      setTimeout(() => closeModal("#download-modal"), 800);
     }
   });
 
