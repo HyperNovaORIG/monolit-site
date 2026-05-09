@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <rect width="32" height="32" fill="#0e2a52"/>
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#7fb3ff" stroke-width="1"/>
+  <g transform="translate(7,7)">
+    <polygon points="9,0 18,4 9,8 0,4" fill="#9a9a9a"/>
+    <polygon points="0,4 9,8 9,18 0,14" fill="#6e6e6e"/>
+    <polygon points="18,4 9,8 9,18 18,14" fill="#828282"/>
+  </g>
+</svg>

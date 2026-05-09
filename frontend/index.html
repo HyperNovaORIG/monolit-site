@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MonoLit — Build Smarter, Build Faster</title>
+  <meta name="description" content="MonoLit is the building-focused Minecraft Fabric client for 1.21–1.21.11. Built-in schematics, Bedrock-style placement, and one-click auto-build." />
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Initial fake-loader -->
+  <div class="loader-overlay" id="boot-loader" aria-hidden="true">
+    <div class="loader-box">
+      <img class="loader-logo" src="/img/logo.svg" alt="" />
+      <div class="loader-title">MonoLit</div>
+      <div class="loader-sub">Compiling chunk geometry — please stand by…</div>
+      <div class="loader-bar"><div class="fill" id="boot-fill"></div></div>
+      <div class="loader-pct" id="boot-pct">0%</div>
+      <div class="loader-step" id="boot-step">Mounting world…</div>
+    </div>
+  </div>
+
+  <!-- Falling pixels background -->
+  <div class="float-particles" id="float-particles" aria-hidden="true"></div>
+
+  <!-- Announcement bar (driven by API) -->
+  <div class="announce-bar" id="announce-bar" hidden>
+    <div class="scroll" id="announce-scroll"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="inner">
+      <a href="#home" class="brand">
+        <img src="/img/logo.svg" alt="MonoLit logo" />
+        <div>
+          <div class="name">MonoLit</div>
+          <div class="tag">Build smarter. Build faster.</div>
+        </div>
+      </a>
+
+      <nav class="nav" id="primary-nav">
+        <a href="#home" class="active">Home</a>
+        <a href="#features">Features</a>
+        <a href="#schematics">Schematics</a>
+        <a href="#tiers">Lite / Pro</a>
+        <a href="#download">Download</a>
+        <a href="#install">Install</a>
+        <a href="#safety">Safety</a>
+        <a href="#vemix">Creator</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#offer">Offer</a>
+        <a href="#support">Support</a>
+      </nav>
+
+      <div class="header-cta">
+        <button class="mc-btn xs menu-toggle" id="menu-toggle">MENU</button>
+        <span class="status-pill" id="status-pill" title="Launcher state">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Online</span>
+        </span>
+        <span id="auth-buttons">
+          <button class="mc-btn sm" id="btn-login">Login</button>
+          <button class="mc-btn sm primary" id="btn-register">Register</button>
+        </span>
+        <span id="user-area" hidden>
+          <button class="user-chip" id="btn-profile" type="button" title="Account">
+            <span id="me-name">player</span>
+            <span class="role User" id="me-role">User</span>
+          </button>
+          <button class="mc-btn sm" id="btn-admin" hidden>Admin</button>
+          <button class="mc-btn sm" id="btn-logout">Logout</button>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="inner">
+      <div>
+        <h1>Stop Mining.<br/>Start <span class="accent">Building.</span></h1>
+        <p class="lede">
+          MonoLit is the building-focused client for Minecraft Java <strong>1.21 – 1.21.11</strong> on
+          Fabric. Snap megabuilds with built-in schematics, place blocks in straight Bedrock-style lines,
+          and let the auto-builder finish your farms while you grab a snack.
+        </p>
+        <div class="cta-row">
+          <a class="mc-btn primary" href="#download">Download Lite — Free</a>
+          <a class="mc-btn gold" href="#tiers">Compare Lite vs Pro</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="num" data-counter="14823">0</div><div class="lbl">Players online</div></div>
+          <div class="stat"><div class="num" data-counter="612">0</div><div class="lbl">Schematics shipped</div></div>
+          <div class="stat"><div class="num" data-counter="99">0</div><div class="lbl">% uptime</div></div>
+        </div>
+      </div>
+
+      <!-- Animated Steve building scene -->
+      <div class="scene" aria-label="Steve building a wheat farm">
+        <div class="ground"></div>
+        <div class="blueprint-overlay"></div>
+        <div class="farm" id="farm"></div>
+        <div class="steve">
+          <div class="head"></div>
+          <div class="torso"></div>
+          <div class="leg-l"></div>
+          <div class="leg-r"></div>
+          <div class="arm-l"></div>
+          <div class="arm-r"><div class="pickaxe"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="block" id="features">
+    <div class="inner">
+      <h2 class="section-title reveal">Core <span class="accent">Features</span></h2>
+      <p class="section-sub reveal">Everything you need to outbuild your friends — and the server.</p>
+
+      <div class="features-grid">
+        <div class="feat reveal"><div class="ico feat-ico-schem"></div>
+          <h3>Built-in Schematics</h3>
+          <p>500+ curated builds — bases, farms, redstone contraptions — load and place in two clicks. Drag-and-drop your own .schem files too.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-bedr"></div>
+          <h3>Bedrock-style Placement</h3>
+          <p>Hold to extend a row, swipe to fill a wall. Diagonal lines, mirrored builds, and slab snapping — finally on Java.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-auto"></div>
+          <h3>Auto-Builder</h3>
+          <p>Queue a schematic and let MonoLit place blocks at server-safe rates. Pause, resume, undo — all without breaking anti-cheat.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-1_21"></div>
+          <h3>1.21 → 1.21.11 Native</h3>
+          <p>Compiled against the latest Yarn mappings. Trial chambers, copper bulbs, vault blocks — all supported on day one.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-fast"></div>
+          <h3>Lightweight Fabric Mod</h3>
+          <p>Just a Fabric API dependency — no Forge baggage, no client mixins fighting your other mods. 1.4 MB jar, &lt;1% CPU.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-anti"></div>
+          <h3>Server-Safe Networking</h3>
+          <p>Adaptive packet pacing learns each server's tick rate so the auto-builder stays under spam thresholds — donutsmp ready.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-light"></div>
+          <h3>Smart Lighting Preview</h3>
+          <p>See block-light in real time before you place. Never have a half-lit farm again.</p>
+        </div>
+        <div class="feat reveal"><div class="ico feat-ico-multi"></div>
+          <h3>Co-op Build Mode</h3>
+          <p>Share a schematic instance with a friend — you build the walls, they build the roof. (Pro only.)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEMATICS GALLERY -->
+  <section class="block" id="schematics">
+    <div class="inner">
+      <h2 class="section-title reveal">The <span class="accent">Schematic</span> Library</h2>
+      <p class="section-sub reveal">A taste of the 500+ builds shipped with MonoLit. Curated, server-tested, ready to drop.</p>
+
+      <div class="schematics-grid">
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-base"></div>
+          <h4>Modular Survival Base</h4>
+          <p class="schem-meta">Lite · 184×96×64 · 12k blocks</p>
+          <p>Compact starter base with double bed nook, redstone door and indoor farm. Reskins between dark oak and deepslate.</p>
+        </article>
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-iron"></div>
+          <h4>Iron Farm v3</h4>
+          <p class="schem-meta">Lite · 17×24×17 · 1.4k blocks</p>
+          <p>Three-villager iron farm with hopper-bridged collection. 320 ingots/h. Donut-server safe.</p>
+        </article>
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-tower"></div>
+          <h4>Diamond Skytower</h4>
+          <p class="schem-meta">Pro · 32×210×32 · 88k blocks</p>
+          <p>Ten-floor mega-tower with helicopter pad. Auto-builder paces it across multiple sessions.</p>
+        </article>
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-mob"></div>
+          <h4>Endermen XP Farm</h4>
+          <p class="schem-meta">Pro · 64×48×64 · 23k blocks</p>
+          <p>End-island enderman grinder with afk platform &amp; trap door fall. Yields 60 lvls in 9 min.</p>
+        </article>
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-redstone"></div>
+          <h4>Sugarcane Reactor</h4>
+          <p class="schem-meta">Lite · 24×8×40 · 3.2k blocks</p>
+          <p>Compact piston-and-observer sugarcane harvester. Self-restocks the bonemeal hopper line.</p>
+        </article>
+        <article class="schem reveal">
+          <div class="schem-thumb thumb-castle"></div>
+          <h4>Coastal Castle</h4>
+          <p class="schem-meta">Pro · 96×64×96 · 41k blocks</p>
+          <p>Cobble &amp; deepslate castle with curtain walls and a stained-glass cathedral. Vemix's signature build.</p>
+        </article>
+      </div>
+      <p style="margin-top:18px;color:var(--text-dim);font-size:16px;">
+        Browse the full library in-game once Lite is installed — schematics tab in the MonoLit pause menu (default <code>K</code>).
+      </p>
+    </div>
+  </section>
+
+  <!-- TIERS -->
+  <section class="block" id="tiers">
+    <div class="inner">
+      <h2 class="section-title reveal">Lite <span class="accent">vs</span> Pro</h2>
+      <p class="section-sub reveal">Start free. Upgrade when you're ready to skip the grind.</p>
+      <div class="tiers">
+        <div class="tier lite reveal">
+          <div class="badge">FREE</div>
+          <h3>MonoLit Lite</h3>
+          <p>For builders who like a head start.</p>
+          <div class="price">$0 <small>/forever</small></div>
+          <ul>
+            <li>Up to 50 built-in schematics</li>
+            <li>Bedrock-style row placement (max 16 blocks)</li>
+            <li>Auto-builder — single block layer</li>
+            <li>Smart lighting preview</li>
+            <li>1.21 – 1.21.11 Fabric support</li>
+            <li>Single-instance manager</li>
+            <li>In-game schematic browser</li>
+            <li class="no">Co-op build mode</li>
+            <li class="no">Custom .schem import (max 1 MB)</li>
+            <li class="no">WorldEdit-style selection</li>
+            <li class="no">Priority Discord support</li>
+          </ul>
+          <div class="actions"><a class="mc-btn primary" href="#download">Download Lite</a></div>
+        </div>
+        <div class="tier pro reveal">
+          <div class="badge">COMING SOON</div>
+          <h3>MonoLit Pro</h3>
+          <p>Unlimited firepower for megabuilders.</p>
+          <div class="price">$8.99 <small>/one-time</small></div>
+          <ul>
+            <li>Full 500+ schematic library + monthly drops</li>
+            <li>Bedrock-style row, wall &amp; volume placement (no cap)</li>
+            <li>Multi-layer auto-builder with redstone wiring</li>
+            <li>Co-op build mode — sync with friends</li>
+            <li>Custom .schem / .litematic import (no size cap)</li>
+            <li>WorldEdit-style box, sphere &amp; cylinder selection</li>
+            <li>Block-replacer, mass-undo, and snapshot history</li>
+            <li>Server-mod profiles (Donut, Hypixel, anarchy)</li>
+            <li>Priority Discord + 12h email support</li>
+            <li>Early access to 1.22 builds</li>
+            <li>Pro-only "Architect" cosmetic cape</li>
+          </ul>
+          <div class="actions"><button class="mc-btn gold disabled" disabled>Coming Soon</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="block" id="download">
+    <div class="inner">
+      <h2 class="section-title reveal"><span class="accent">Download</span> MonoLit</h2>
+      <p class="section-sub reveal">Drop the jar in your <code>mods/</code> folder. Done.</p>
+
+      <div class="download-grid">
+        <div class="dl-card reveal">
+          <h3>MonoLit Lite</h3>
+          <p>The free, building-focused Fabric mod.</p>
+          <div class="meta">
+            <span>v1.0.2A</span>
+            <span>Fabric</span>
+            <span>1.21 – 1.21.11</span>
+            <span>Java 21</span>
+          </div>
+          <button class="mc-btn primary" id="btn-download-lite">Download Lite (.jar)</button>
+          <a class="dl-trust" href="#safety">
+            <span class="dl-trust-ico" aria-hidden="true">✓</span>
+            <span>Verified clean — <strong>0 / 70+ on VirusTotal</strong> · view scan ↗</span>
+          </a>
+        </div>
+        <div class="dl-card locked reveal">
+          <h3>MonoLit Pro</h3>
+          <p>Megabuilder edition. Releases soon™.</p>
+          <div class="meta">
+            <span>v1.0 — Beta</span>
+            <span>Fabric</span>
+            <span>1.21 – 1.21.11</span>
+          </div>
+          <button class="mc-btn gold" disabled>Locked</button>
+          <div class="lock-overlay">
+            <div class="icon">🔒</div>
+            <div>Pro is still in development.</div>
+            <div style="font-family:'VT323',monospace;font-size:18px;color:var(--text-dim);margin-top:10px;">Wishlist below to be notified.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fabric-note">
+        <span class="pixel">REQUIRED</span>
+        MonoLit needs <strong>Fabric API</strong> to load. Grab it from the official Modrinth page, drop it in your <code>mods/</code> folder next to the MonoLit jar, and launch with the Fabric profile.
+        <br/><br/>
+        →
+        <a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noopener">Download Fabric API on Modrinth</a>
+        &nbsp;·&nbsp;
+        <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener">Get the Fabric Installer</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL GUIDE -->
+  <section class="block" id="install">
+    <div class="inner">
+      <h2 class="section-title reveal">Install in <span class="accent">90 seconds</span></h2>
+      <p class="section-sub reveal">From clean Vanilla to MonoLit-ready. Five steps, two jars.</p>
+
+      <div class="steps-grid">
+        <div class="step reveal"><div class="step-num">1</div>
+          <h4>Install the Fabric loader</h4>
+          <p>Run the official <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener">Fabric Installer</a> for <strong>1.21.x</strong>. Pick "Client" and let it generate the launcher profile.</p>
+        </div>
+        <div class="step reveal"><div class="step-num">2</div>
+          <h4>Drop in Fabric API</h4>
+          <p>Grab <a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noopener">Fabric API</a> from Modrinth (matching <strong>1.21–1.21.11</strong>) and place the jar in your <code>%appdata%/.minecraft/mods/</code> folder.</p>
+        </div>
+        <div class="step reveal"><div class="step-num">3</div>
+          <h4>Drop in MonoLit Lite</h4>
+          <p>Download <strong>MonoLit Lite</strong> above and put the jar next to Fabric API in <code>mods/</code>. That's it — no installer.</p>
+        </div>
+        <div class="step reveal"><div class="step-num">4</div>
+          <h4>Launch the Fabric profile</h4>
+          <p>Open the Minecraft launcher → choose the <strong>fabric-loader-1.21.x</strong> installation → Play. The MonoLit logo should appear on the title screen.</p>
+        </div>
+        <div class="step reveal"><div class="step-num">5</div>
+          <h4>Open the build menu</h4>
+          <p>In-game press <code>K</code> to open the schematic browser, or hold <code>Ctrl</code> while placing a block to start a Bedrock-style line.</p>
+        </div>
+      </div>
+
+      <div class="mc-pane reveal" style="margin-top:24px;">
+        <h3 class="pixel" style="font-size:13px;margin-bottom:10px;color:var(--gold);">Default keybinds</h3>
+        <div class="keybinds">
+          <div><kbd>K</kbd><span>Open schematic browser</span></div>
+          <div><kbd>Ctrl</kbd><kbd>+</kbd><span>Bedrock-style line placement</span></div>
+          <div><kbd>Shift</kbd><kbd>+</kbd><span>Mirror placement</span></div>
+          <div><kbd>B</kbd><span>Toggle auto-builder</span></div>
+          <div><kbd>U</kbd><span>Mass undo (last 32 placements)</span></div>
+          <div><kbd>L</kbd><span>Toggle smart-light preview</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAFETY / TRUST -->
+  <section class="block" id="safety">
+    <div class="inner">
+      <h2 class="section-title reveal"><span class="accent">Verified</span> Safe</h2>
+      <p class="section-sub reveal">Every Lite jar we ship is hash-pinned, scanned on VirusTotal, and free of obfuscation. Inspect it yourself before you install — that's the whole point.</p>
+
+      <!-- Hero verification card -->
+      <div class="safety-hero reveal">
+        <div class="safety-shield" aria-hidden="true">
+          <svg viewBox="0 0 64 72" width="84" height="94" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 2 L60 14 V36 C60 54 46 66 32 70 C18 66 4 54 4 36 V14 Z" fill="#1a3a22" stroke="#2bb673" stroke-width="3"/>
+            <path d="M32 8 L54 17 V36 C54 50 44 60 32 64 C20 60 10 50 10 36 V17 Z" fill="#0f2614" stroke="#5fc63a" stroke-width="2" opacity="0.9"/>
+            <path d="M19 36 L29 47 L46 26" stroke="#5fc63a" stroke-width="6" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </div>
+        <div class="safety-hero-text">
+          <div class="safety-stat-row">
+            <div class="safety-stat-num pixel">0 / 70+</div>
+            <div class="safety-stat-lbl">engines detected on VirusTotal</div>
+          </div>
+          <p>The exact <code>.jar</code> served from <code>/api/download/lite</code> on this site has been scanned by 70+ engines. Click through to see the live report — Cloudflare-cached, no login required.</p>
+          <a class="mc-btn primary" href="https://www.virustotal.com/gui/file/4034cf7e7c920ac9a28315c00ca9cd359eaf19a13053b475622dd5a4a1cfed06/detection" target="_blank" rel="noopener">View VirusTotal report ↗</a>
+        </div>
+      </div>
+
+      <!-- Hash card -->
+      <div class="safety-hashes mc-pane reveal">
+        <h3 class="pixel" style="font-size:13px;color:var(--gold);margin-bottom:14px;">File fingerprints — verify before you install</h3>
+        <div class="hash-row">
+          <span class="hash-label">File</span>
+          <span class="hash-value mono">MonoLit-Lite-1.0.2A.jar</span>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">Size</span>
+          <span class="hash-value mono">23 940 bytes</span>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">SHA-256</span>
+          <span class="hash-value mono break" id="hash-sha256">4034cf7e7c920ac9a28315c00ca9cd359eaf19a13053b475622dd5a4a1cfed06</span>
+          <button class="mc-btn xs hash-copy" data-copy="hash-sha256" type="button">Copy</button>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">SHA-1</span>
+          <span class="hash-value mono break" id="hash-sha1">e6ab8811b566b3f0accb5984e58c57bf617c2871</span>
+          <button class="mc-btn xs hash-copy" data-copy="hash-sha1" type="button">Copy</button>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">MD5</span>
+          <span class="hash-value mono break" id="hash-md5">4c7914cf7247feecc5fe60b7b93d761c</span>
+          <button class="mc-btn xs hash-copy" data-copy="hash-md5" type="button">Copy</button>
+        </div>
+        <p class="hash-howto">
+          On Windows: <code>certutil -hashfile MonoLit-Lite-1.0.2A.jar SHA256</code> ·
+          on macOS / Linux: <code>shasum -a 256 MonoLit-Lite-1.0.2A.jar</code>.
+          The hash should match the SHA-256 above and the one shown on VirusTotal.
+        </p>
+      </div>
+
+      <!-- Checklist -->
+      <div class="safety-grid">
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Zero detections</h4>
+          <p>Scanned with 70+ AV engines (BitDefender, Kaspersky, ESET, Microsoft, Sophos, Trend Micro, …) — all clean.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Source-available, no obfuscation</h4>
+          <p>The Lite jar is shipped <strong>unobfuscated</strong>. Decompile it with <em>jadx</em> or <em>jd-gui</em> in 30 seconds — every class name, every method.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>No telemetry, no analytics</h4>
+          <p>Zero outbound calls outside the Minecraft server you're connected to. No phone-home, no analytics, no crash beacons. <em>grep</em> for "http" in the jar — there's nothing to find.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Only Fabric &amp; Mojang APIs</h4>
+          <p>MonoLit talks to the game through public Fabric API events and the vanilla packet pipeline — exactly what every other 1.21 mod does. No native code, no JNI, no <code>Runtime.exec()</code>.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Hash-pinned download</h4>
+          <p>This site streams the same <strong>23 940-byte</strong> binary that VirusTotal scanned. The SHA-256 in the URL of the report ↑ matches the SHA-256 you'll get on disk.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Site uses bcrypt + JWT cookies</h4>
+          <p>Your account password is bcrypt-hashed (cost 12) — not stored. Sessions live in HttpOnly + SameSite=Lax cookies. Rate-limiting on /register and /login.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>HTTPS only in production</h4>
+          <p>Cookies are flagged Secure when served over TLS. CORS is locked to same-origin. Headers: <code>X-Frame-Options DENY</code>, <code>X-Content-Type-Options nosniff</code>, <code>Referrer-Policy strict-origin-when-cross-origin</code>.</p>
+        </div>
+        <div class="safety-card reveal">
+          <div class="safety-ico" aria-hidden="true">✓</div>
+          <h4>Owner is reachable</h4>
+          <p>Spotted something off in the binary or on the site? DM <strong style="color:var(--diamond);">@onlimatter</strong> on Discord directly. Real human, real reply, no ticket black hole.</p>
+        </div>
+      </div>
+
+      <p class="safety-disclaimer reveal">
+        <strong style="color:var(--gold);">Anti-cheat note.</strong> MonoLit is a <em>build-assist</em> client.
+        It does not give you reach, kill aura, x-ray, fly, or any combat advantage —
+        every block placement still goes through the vanilla packet pipeline.
+        Servers that allow <em>Litematica</em> or <em>WorldEdit</em>-style tooling generally allow MonoLit, but always check your server's rules first.
+      </p>
+    </div>
+  </section>
+
+  <!-- VEMIX -->
+  <section class="block" id="vemix">
+    <div class="inner">
+      <h2 class="section-title reveal">Made with <span class="accent">Vemix</span></h2>
+      <p class="section-sub reveal">Co-designed with the YouTuber who never stops building.</p>
+
+      <div class="mc-pane reveal">
+        <div class="vemix-card">
+          <div class="avatar" style="background-image:url('/img/vemix.jpg');"></div>
+          <div>
+            <h3>Vemix</h3>
+            <div class="role-line">Minecraft Build Creator · Partner</div>
+            <p style="font-size:18px;color:var(--text-dim);margin-bottom:14px;">
+              Vemix consulted on every keybind, schematic, and edge-case in MonoLit — from
+              Bedrock-style placement feel to auto-builder rate-limits. The 50 starter schematics
+              shipped with Lite are pulled directly from his actual builds.
+            </p>
+            <p style="font-size:18px;color:var(--text-dim);">
+              "MonoLit is the client I wish I had three years ago. The auto-builder turns a
+              two-hour grind into a five-minute setup — without feeling cheaty." — <em>Vemix</em>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="block" id="roadmap">
+    <div class="inner">
+      <h2 class="section-title reveal">Public <span class="accent">Roadmap</span></h2>
+      <p class="section-sub reveal">Where we're going. Track shipped releases and what's cooking.</p>
+
+      <ol class="timeline">
+        <li class="reveal shipped">
+          <div class="dot"></div>
+          <h4>v1.0.0 — Public Lite launch</h4>
+          <p class="time">May 2026 · shipped</p>
+          <p>Bedrock-style placement, single-layer auto-builder, 50 starter schematics, 1.21–1.21.11.</p>
+        </li>
+        <li class="reveal shipped">
+          <div class="dot"></div>
+          <h4>v1.0.2A — Donut server profile</h4>
+          <p class="time">May 2026 · shipped</p>
+          <p>Adaptive packet pacing for high-population SMPs, slab/stair snap polish, 12 new farms.</p>
+        </li>
+        <li class="reveal active">
+          <div class="dot"></div>
+          <h4>v1.1 — Co-op build mode (Pro beta)</h4>
+          <p class="time">Q3 2026 · in development</p>
+          <p>Two-player synchronized auto-build, role-based permissions, build chat. Closed Pro beta opens after launch.</p>
+        </li>
+        <li class="reveal planned">
+          <div class="dot"></div>
+          <h4>v1.2 — WorldEdit-style selection</h4>
+          <p class="time">Q4 2026 · planned</p>
+          <p>Box / sphere / cylinder selection, mass block-replacer, snapshot history with rewind.</p>
+        </li>
+        <li class="reveal planned">
+          <div class="dot"></div>
+          <h4>v2.0 — 1.22 jump</h4>
+          <p class="time">2027 · planned</p>
+          <p>Day-one 1.22 support with the new mob &amp; biome registries, redesigned schematic browser.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SPECIAL OFFER -->
+  <section class="block" id="offer">
+    <div class="inner">
+      <div class="offer reveal">
+        <span class="ribbon">⚡ LIMITED-TIME DROP ⚡</span>
+        <h3>Play 15 minutes on DonutSMP. Walk away with <span style="color:var(--gold)">15M</span> in-game.</h3>
+        <p style="font-size:18px;color:var(--text-dim);margin-bottom:18px;">
+          We're partnering with the donutsmp.net community to put MonoLit Lite in builders' hands.
+          Show us a screenshot from your session — we send the in-game cash.
+        </p>
+        <div class="reward">15,000,000$</div>
+        <ol class="steps">
+          <li>Download <strong>MonoLit Lite</strong> below and install Fabric API.</li>
+          <li>Hop on <code>donutsmp.net</code> with the mod loaded.</li>
+          <li>Build &amp; play for at least <strong>15 minutes</strong>.</li>
+          <li>Take an in-game screenshot showing the MonoLit HUD overlay.</li>
+          <li>Submit it through the <a href="#support" style="color:var(--gold);">Support form</a> with the subject "DonutSMP Drop" — <em>or</em> DM the screenshot directly to the Owner on Discord.</li>
+        </ol>
+
+        <div class="contact-card reveal">
+          <div class="contact-ico" aria-hidden="true">
+            <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg" width="34" height="26">
+              <path fill="#5865F2" d="M60.1 4.9A58.6 58.6 0 0 0 45.6.5a.2.2 0 0 0-.2.1c-.6 1-1.3 2.4-1.7 3.5a54.3 54.3 0 0 0-16.4 0c-.5-1.1-1.2-2.5-1.7-3.5a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.9 4.9a.2.2 0 0 0-.1.1A60.6 60.6 0 0 0 .2 45.6a.2.2 0 0 0 .1.2 58.9 58.9 0 0 0 17.7 9 .2.2 0 0 0 .2-.1c1.4-1.9 2.6-3.9 3.6-6a.2.2 0 0 0-.1-.3c-2-.7-3.8-1.6-5.6-2.7a.2.2 0 0 1 0-.3l1.1-.9a.2.2 0 0 1 .2 0 42 42 0 0 0 35.7 0 .2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .3 36 36 0 0 1-5.6 2.7.2.2 0 0 0-.1.3c1 2.1 2.2 4.1 3.6 6a.2.2 0 0 0 .2.1 58.7 58.7 0 0 0 17.7-9 .2.2 0 0 0 .1-.2A60.2 60.2 0 0 0 60.2 5a.2.2 0 0 0-.1-.1ZM23.7 37.6c-3.5 0-6.4-3.2-6.4-7.2 0-4 2.8-7.2 6.4-7.2 3.6 0 6.4 3.3 6.4 7.2 0 4-2.8 7.2-6.4 7.2Zm23.6 0c-3.5 0-6.4-3.2-6.4-7.2 0-4 2.8-7.2 6.4-7.2 3.6 0 6.4 3.3 6.4 7.2 0 4-2.8 7.2-6.4 7.2Z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="pixel" style="font-size:11px;margin-bottom:4px;">Don't like forms?</p>
+            <p style="font-size:17px;margin:0;">DM the Owner on Discord — <strong style="color:var(--diamond);">@onlimatter</strong> — with the screenshot and your in-game username. Same drop, faster turnaround.</p>
+          </div>
+        </div>
+
+        <p style="font-size:15px;color:var(--text-dim);margin-top:16px;">
+          *In-game currency only. One claim per Minecraft username. Promo runs while supplies last.
+          DonutSMP is an independent server — MonoLit is not affiliated with it operationally.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="block" id="support">
+    <div class="inner support">
+      <h2 class="section-title reveal">Technical <span class="accent">Support</span></h2>
+      <p class="section-sub reveal">Stuck installing? Auto-builder freezing? Send it our way.</p>
+
+      <div class="support-grid">
+        <div class="mc-pane reveal">
+          <h3 class="pixel" style="font-size:14px;margin-bottom:14px;">Open a ticket</h3>
+          <form id="support-form">
+            <label class="field"><span>Your contact (email or Discord)</span>
+              <input type="text" name="contact" required maxlength="255" placeholder="you@example.com" />
+            </label>
+            <label class="field"><span>Subject</span>
+              <input type="text" name="subject" required minlength="3" maxlength="120" placeholder="Auto-builder freezes on Donut" />
+            </label>
+            <label class="field"><span>Describe the issue</span>
+              <textarea name="body" required minlength="10" maxlength="4000" placeholder="Steps to reproduce, MC version, mod list…"></textarea>
+            </label>
+            <div class="alert" id="support-alert"></div>
+            <button class="mc-btn primary" type="submit">Submit Ticket</button>
+          </form>
+        </div>
+
+        <div class="faq">
+          <h3 class="pixel" style="font-size:14px;margin-bottom:6px;">FAQ</h3>
+          <details><summary>Is MonoLit allowed on DonutSMP?</summary>
+            <p>Yes. MonoLit's auto-builder uses adaptive packet pacing that stays under DonutSMP's anti-cheat thresholds. Use Lite freely; we test against Donut every release.</p></details>
+          <details><summary>Why do I need Fabric API?</summary>
+            <p>Fabric API exposes the modding hooks (registries, networking, events) that MonoLit relies on. It's a single jar — drop it next to MonoLit in your <code>mods/</code> folder.</p></details>
+          <details><summary>Will MonoLit work with OptiFine / Sodium?</summary>
+            <p>Sodium yes — fully compatible. OptiFine is Forge-only; if you need shaders, run Sodium + Iris instead.</p></details>
+          <details><summary>Can I import my own schematics?</summary>
+            <p>Lite supports up to 1 MB .schem imports. Pro removes the size cap and adds .litematic support.</p></details>
+          <details><summary>How do I qualify for the DonutSMP 15M drop?</summary>
+            <p>Play with MonoLit Lite for at least 15 minutes on donutsmp.net, screenshot the in-game HUD, and submit it through this form with the subject "DonutSMP Drop" — or DM the Owner on Discord at <strong style="color:var(--diamond);">@onlimatter</strong>.</p></details>
+          <details><summary>I lost my password.</summary>
+            <p>Open a ticket above with your username — an Owner or Dev can reset it for you.</p></details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="inner">
+      <div>
+        <div class="brand">
+          <img src="/img/logo.svg" alt="" style="width:40px;height:40px;" />
+          <div>
+            <div class="name">MonoLit</div>
+            <div class="tag">© <span id="year"></span> MonoLit Studio</div>
+          </div>
+        </div>
+        <p class="small" style="max-width:480px;margin-top:14px;">
+          MonoLit is an independent Fabric mod for Minecraft Java Edition.
+          Not affiliated with Mojang or Microsoft. Minecraft is a registered trademark of Mojang AB.
+        </p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#tiers">Lite / Pro</a></li>
+          <li><a href="#download">Download</a></li>
+          <li><a href="#vemix">Creator</a></li>
+          <li><a href="#support">Support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noopener">Fabric API</a></li>
+          <li><a href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener">Fabric Installer</a></li>
+          <li><a href="#offer">DonutSMP Drop</a></li>
+          <li><a href="#safety">Safety / VirusTotal</a></li>
+          <li><a href="#" id="footer-changelog">Changelog</a></li>
+          <li><a href="#" id="footer-status">System Status</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AUTH MODAL -->
+  <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="panel">
+      <button class="x" data-close>X</button>
+      <h2 id="auth-title">Welcome, builder.</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:8px;" id="auth-sub">Register to save your settings, schematic favourites and your DonutSMP claim.</p>
+      <div class="tabs" id="auth-tabs">
+        <button class="active" data-tab="register">Register</button>
+        <button data-tab="login">Login</button>
+      </div>
+      <form id="form-register" class="tab-pane active">
+        <label class="field"><span>Nickname (3-16 chars, A-Z 0-9 _)</span>
+          <input type="text" name="username" required minlength="3" maxlength="16" autocomplete="username" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Password (min 6)</span>
+          <input type="password" name="password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Confirm password</span>
+          <input type="password" name="password2" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <div class="alert" id="reg-alert"></div>
+        <button class="mc-btn primary" type="submit" style="margin-top:14px;width:100%;">Create Account</button>
+      </form>
+      <form id="form-login" class="tab-pane">
+        <label class="field"><span>Nickname</span>
+          <input type="text" name="username" required maxlength="64" autocomplete="username" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Password</span>
+          <input type="password" name="password" required maxlength="256" autocomplete="current-password" />
+        </label>
+        <div class="alert" id="login-alert"></div>
+        <button class="mc-btn primary" type="submit" style="margin-top:14px;width:100%;">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN MODAL -->
+  <div class="modal" id="admin-modal" role="dialog" aria-modal="true">
+    <div class="panel wide">
+      <button class="x" data-close>X</button>
+      <h2>Admin Console <span id="admin-role-tag" class="role Owner" style="font-size:8px;margin-left:8px;">Owner</span></h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:8px;">Manage the launcher, the playerbase and the broadcast feed.</p>
+
+      <div class="tabs" id="admin-tabs">
+        <button class="active" data-tab="adm-launcher">Launcher</button>
+        <button data-tab="adm-broadcast">Broadcast</button>
+        <button data-tab="adm-users">Users</button>
+        <button data-tab="adm-create" data-owner-only>+ Account</button>
+        <button data-tab="adm-tickets">Tickets</button>
+      </div>
+
+      <div id="adm-launcher" class="tab-pane active">
+        <div class="mc-pane">
+          <h3 class="pixel" style="font-size:13px;margin-bottom:14px;">Launcher state</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:18px;">
+            <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-online" style="width:auto;" /> Launcher online (visible to players)</label>
+            <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-downloads" style="width:auto;" /> Downloads enabled (Lite jar)</label>
+            <label class="field"><span>Status message</span><input type="text" id="ls-msg" maxlength="255" /></label>
+            <div><button class="mc-btn primary" id="ls-save">Save state</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="adm-broadcast" class="tab-pane">
+        <div class="mc-pane">
+          <h3 class="pixel" style="font-size:13px;margin-bottom:14px;">Global broadcast</h3>
+          <p style="font-size:16px;color:var(--text-dim);margin-bottom:10px;">All visitors see the most recent broadcast as a marquee at the top of the page.</p>
+          <label class="field"><span>Message</span>
+            <textarea id="bc-body" maxlength="1000" placeholder="Server maintenance Saturday 12:00 UTC — auto-builder offline for 2h."></textarea>
+          </label>
+          <div style="margin-top:10px;"><button class="mc-btn primary" id="bc-send">Send broadcast</button></div>
+          <h4 class="pixel" style="font-size:11px;margin:18px 0 8px;color:var(--gold);">Recent broadcasts</h4>
+          <div class="feed" id="bc-feed"></div>
+        </div>
+      </div>
+
+      <div id="adm-users" class="tab-pane">
+        <div class="mc-pane">
+          <h3 class="pixel" style="font-size:13px;margin-bottom:14px;">Registered accounts</h3>
+          <div style="overflow:auto;">
+            <table class="tbl" id="users-tbl">
+              <thead><tr><th>ID</th><th>User</th><th>Role</th><th>Status</th><th>Joined</th><th>Last seen</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="adm-create" class="tab-pane">
+        <div class="mc-pane">
+          <h3 class="pixel" style="font-size:13px;margin-bottom:14px;">Create account (Owner only)</h3>
+          <form id="create-form">
+            <label class="field"><span>Username</span><input type="text" name="username" required minlength="3" maxlength="16" /></label>
+            <label class="field" style="margin-top:10px;"><span>Temporary password</span><input type="text" name="password" required minlength="6" maxlength="128" /></label>
+            <label class="field" style="margin-top:10px;"><span>Role</span>
+              <select name="role">
+                <option value="Dev">Dev</option>
+                <option value="User">User</option>
+                <option value="Owner">Owner</option>
+              </select>
+            </label>
+            <div class="alert" id="create-alert"></div>
+            <button class="mc-btn primary" style="margin-top:12px;">Create</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="adm-tickets" class="tab-pane">
+        <div class="mc-pane">
+          <h3 class="pixel" style="font-size:13px;margin-bottom:14px;">Support tickets</h3>
+          <div id="tickets-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div class="modal" id="profile-modal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <button class="x" data-close>X</button>
+      <h2>Account</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:8px;">Manage your MonoLit identity.</p>
+      <div class="profile-row">
+        <div class="profile-avatar" id="profile-avatar">P</div>
+        <div>
+          <div class="pixel" style="font-size:14px;" id="profile-name">player</div>
+          <div style="font-size:14px;color:var(--text-dim);margin-top:4px;">
+            Role: <span id="profile-role" class="role User">User</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);margin-top:4px;" id="profile-meta"></div>
+        </div>
+      </div>
+      <h3 class="pixel" style="font-size:12px;color:var(--gold);margin:20px 0 10px;">Change password</h3>
+      <form id="form-change-password">
+        <label class="field"><span>Current password</span>
+          <input type="password" name="current_password" required maxlength="256" autocomplete="current-password" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>New password (min 6)</span>
+          <input type="password" name="new_password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <div class="alert" id="profile-alert"></div>
+        <button class="mc-btn primary" type="submit" style="margin-top:12px;">Update password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD PROGRESS MODAL -->
+  <div class="modal" id="download-modal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2 id="dl-title">Preparing MonoLit Lite…</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:14px;" id="dl-sub">Validating block registry and pulling artifacts.</p>
+      <div class="loader-bar"><div class="fill" id="dl-fill"></div></div>
+      <div class="loader-pct" id="dl-pct">0%</div>
+      <div class="loader-step" id="dl-step">Connecting to mirror…</div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
