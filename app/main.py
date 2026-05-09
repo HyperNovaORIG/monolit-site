@@ -41,6 +41,7 @@ FRONTEND = ROOT / "frontend"
 APP_DIR = Path(__file__).resolve().parent
 MONOLIT_LITE_JAR = APP_DIR / "MonoLit-Lite-1.0.2A.jar"
 FABRIC_JAR = APP_DIR / "fabric-1.21.11.jar"
+EXPRESS_BUNDLE = APP_DIR / "MonoLit.rar"
 # Backwards-compat alias used elsewhere.
 JAR_PATH = FABRIC_JAR
 
@@ -377,14 +378,31 @@ def download_express_check(
     db: Session = Depends(get_db),
     user: User | None = Depends(get_optional_user),
 ):
-    """Pre-flight check the JS calls before kicking off Express downloads.
+    """Pre-flight check the UI hits before redirecting to /api/download/express.
 
     Lets the admin block "express" without disabling individual files, and
-    returns a unified error so the UI can show one toast.
+    returns a unified error so the UI can show one toast before the
+    browser commits to a download.
     """
     state = db.execute(select(LauncherState).limit(1)).scalar_one()
     _download_check(state, user, slot="express")
     return {"ok": True}
+
+
+@app.get("/api/download/express")
+def download_express(
+    db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
+):
+    state = db.execute(select(LauncherState).limit(1)).scalar_one()
+    _download_check(state, user, slot="express")
+    if not EXPRESS_BUNDLE.exists():
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Express bundle missing.")
+    return FileResponse(
+        EXPRESS_BUNDLE,
+        media_type="application/vnd.rar",
+        filename="MonoLit.rar",
+    )
 
 
 # Backwards-compat: /api/download/lite kept so any old links still work.
