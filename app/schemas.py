@@ -137,3 +137,19 @@ class CreateAccountIn(BaseModel):
         if v not in {"User", "Dev", "Owner"}:
             raise ValueError("Role must be User, Dev, or Owner.")
         return v
+
+
+class PasswordPermissionOut(BaseModel):
+    """Pending permission slip a target user is offered to accept or decline."""
+
+    id: int
+    granted_by_username: str
+    granted_by_role: str
+    created_at: datetime
+    expires_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class PasswordPermissionAcceptIn(BaseModel):
+    new_password: str = Field(..., min_length=6, max_length=128)

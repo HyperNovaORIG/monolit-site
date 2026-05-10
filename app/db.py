@@ -126,6 +126,33 @@ class SupportTicket(Base):
     user: Mapped[User | None] = relationship(back_populates="tickets")
 
 
+class PasswordChangePermission(Base):
+    """A staff-issued permission slip allowing a target user to set a new password.
+
+    Workflow:
+    1. Dev/Owner POSTs to /api/admin/users/{id}/password-permission, creating a
+       row with status="pending".
+    2. The target user, on every page, polls /api/auth/password-permission and
+       sees a banner offering to accept or decline.
+    3. Accept -> the user supplies the new password themselves; the row is
+       marked "accepted". The admin never sees or chooses the password.
+    4. Decline -> the row is marked "declined". Permission expires after
+       ``expires_at`` if neither happens.
+    """
+
+    __tablename__ = "password_change_permissions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    target_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    granted_by_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    granted_by_username: Mapped[str] = mapped_column(String(32), nullable=False)
+    granted_by_role: Mapped[str] = mapped_column(String(16), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), default="pending", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
     _run_lightweight_migrations()
