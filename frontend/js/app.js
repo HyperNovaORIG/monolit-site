@@ -726,6 +726,29 @@
         });
         actions.appendChild(del);
       }
+
+      // Password change permission: Owner can issue to any non-self user.
+      // Dev can issue to plain Users only. Permission lasts 30 minutes
+      // and the target user supplies the new password themselves.
+      const canResetPwd = !isMe && (
+        state.me.role === "Owner" ||
+        (state.me.role === "Dev" && u.role === "User")
+      );
+      if (canResetPwd) {
+        const reset = document.createElement("button");
+        reset.className = "mc-btn xs";
+        reset.textContent = "Reset password";
+        reset.title = "Send a password-change permission to this user. They confirm and pick the new password.";
+        reset.addEventListener("click", async () => {
+          if (!confirm(`Send a password-change request to ${u.username}? They will see a banner and pick the new password themselves.`)) return;
+          try {
+            const perm = await api(`/api/admin/users/${u.id}/password-permission`, { method: "POST" });
+            toast(`Permission sent to ${u.username}. Status: ${perm.status}.`, "ok", 5000);
+            loadUsers();
+          } catch (err) { toast(err.message, "err", 5000); }
+        });
+        actions.appendChild(reset);
+      }
       tbody.appendChild(tr);
     });
   }
@@ -775,6 +798,122 @@
     });
   }
 
+  // ---------- Password change permission (target side) ----------
+  // A staff member can grant this user a "permission slip" to change their
+  // password. We poll for it on every page; when one arrives, show a modal
+  // with Accept / Decline. On Accept, the user types the new password
+  // themselves (admin never sees it).
+  const pwdPerm = {
+    current: null,
+    declined: new Set(),
+  };
+
+  function formatExpiresIn(iso) {
+    if (!iso) return "soon";
+    const ms = new Date(iso).getTime() - Date.now();
+    if (ms <= 0) return "now";
+    const mins = Math.round(ms / 60000);
+    if (mins < 1) return "in <1 min";
+    if (mins === 1) return "in 1 minute";
+    return `in ${mins} minutes`;
+  }
+
+  function showPwdPermModal(perm) {
+    const grantor = $("#pwdperm-grantor");
+    const role = $("#pwdperm-grantor-role");
+    const expires = $("#pwdperm-expires");
+    if (grantor) grantor.textContent = perm.granted_by_username;
+    if (role) {
+      role.textContent = perm.granted_by_role;
+      role.className = "role " + perm.granted_by_role;
+    }
+    if (expires) expires.textContent = formatExpiresIn(perm.expires_at);
+    const decision = $("#pwdperm-stage-decision");
+    const form = $("#form-pwdperm-set");
+    if (decision) decision.hidden = false;
+    if (form) {
+      form.hidden = true;
+      form.reset();
+    }
+    const al = $("#pwdperm-alert");
+    if (al) al.textContent = "";
+    openModal("#pwdperm-modal");
+  }
+
+  async function refreshPwdPerm() {
+    if (!state.me) {
+      pwdPerm.current = null;
+      return;
+    }
+    let perm = null;
+    try {
+      perm = await api("/api/auth/password-permission");
+    } catch (_) { return; }
+    if (!perm) {
+      pwdPerm.current = null;
+      return;
+    }
+    if (pwdPerm.declined.has(perm.id)) return;
+    if (pwdPerm.current && pwdPerm.current.id === perm.id) return;
+    pwdPerm.current = perm;
+    const modal = $("#pwdperm-modal");
+    if (!modal) return;
+    showPwdPermModal(perm);
+  }
+
+  $("#pwdperm-accept")?.addEventListener("click", () => {
+    const decision = $("#pwdperm-stage-decision");
+    const form = $("#form-pwdperm-set");
+    if (decision) decision.hidden = true;
+    if (form) form.hidden = false;
+    const al = $("#pwdperm-alert");
+    if (al) al.textContent = "";
+  });
+
+  $("#pwdperm-cancel")?.addEventListener("click", () => {
+    const decision = $("#pwdperm-stage-decision");
+    const form = $("#form-pwdperm-set");
+    if (form) form.hidden = true;
+    if (decision) decision.hidden = false;
+  });
+
+  $("#pwdperm-decline")?.addEventListener("click", async () => {
+    try {
+      await api("/api/auth/password-permission/decline", { method: "POST" });
+      if (pwdPerm.current) pwdPerm.declined.add(pwdPerm.current.id);
+      pwdPerm.current = null;
+      closeModal("#pwdperm-modal");
+      toast("Password change request declined.", "info");
+    } catch (err) {
+      toast(err.message, "err");
+    }
+  });
+
+  $("#form-pwdperm-set")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const al = $("#pwdperm-alert");
+    if (al) al.textContent = "";
+    const p1 = f.new_password.value;
+    const p2 = f.confirm_password.value;
+    if (p1 !== p2) {
+      if (al) al.textContent = "Passwords do not match.";
+      return;
+    }
+    try {
+      await api("/api/auth/password-permission/accept", {
+        method: "POST",
+        body: JSON.stringify({ new_password: p1 }),
+      });
+      pwdPerm.current = null;
+      closeModal("#pwdperm-modal");
+      f.reset();
+      toast("Password updated.", "ok", 4500);
+    } catch (err) {
+      if (al) al.textContent = err.message;
+    }
+  });
+
   // ---------- Misc helpers ----------
   function escapeHtml(s) {
     return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -794,10 +933,13 @@
       await runBootLoader();
       animateCounters();
       promptRegisterOnce();
+      // Initial password-permission check after we know who we are.
+      refreshPwdPerm();
       // Background polling so banned/role changes / launcher toggles propagate
       setInterval(refreshLauncher, 15000);
       setInterval(refreshAnnouncements, 20000);
       setInterval(refreshMe, 30000);
+      setInterval(refreshPwdPerm, 10000);
     });
 
   $("#footer-changelog")?.addEventListener("click", (e) => {

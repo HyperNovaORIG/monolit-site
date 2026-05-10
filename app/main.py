@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
@@ -18,10 +19,12 @@ from app import schemas
 from app.db import (
     Announcement,
     LauncherState,
+    PasswordChangePermission,
     SessionLocal,
     SupportTicket,
     User,
     init_db,
+    utcnow,
 )
 from app.security import (
     COOKIE_NAME,
@@ -39,7 +42,9 @@ from app.security import (
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
 APP_DIR = Path(__file__).resolve().parent
-MONOLIT_LITE_JAR = APP_DIR / "MonoLit-Lite-1.0.2A.jar"
+MONOLIT_CLIENT_JAR = APP_DIR / "MonoLitClient-1.2.A.jar"
+# Backwards-compat alias used in a few places.
+MONOLIT_LITE_JAR = MONOLIT_CLIENT_JAR
 FABRIC_JAR = APP_DIR / "fabric-1.21.11.jar"
 EXPRESS_BUNDLE = APP_DIR / "MonoLit.rar"
 # Backwards-compat alias used elsewhere.
@@ -58,6 +63,16 @@ MAINTENANCE_ALLOWED_PREFIXES = (
 
 OWNER_USERNAME = os.environ.get("MONOLIT_OWNER_USERNAME", "pnexn")
 OWNER_PASSWORD = os.environ.get("MONOLIT_OWNER_PASSWORD", "MonoLitOwner!2025")
+# Set MONOLIT_OWNER_FORCE_RESET=1 in the deployment env to reset the Owner
+# password to OWNER_PASSWORD on the next startup. Unset it after one redeploy.
+OWNER_FORCE_RESET = os.environ.get("MONOLIT_OWNER_FORCE_RESET", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+
+PERMISSION_TTL_MINUTES = 30
 
 
 def seed_db() -> None:
@@ -85,9 +100,18 @@ def seed_db() -> None:
             )
             db.add(owner)
             db.commit()
-        elif owner.role != "Owner":
-            owner.role = "Owner"
-            db.commit()
+        else:
+            changed = False
+            if owner.role != "Owner":
+                owner.role = "Owner"
+                changed = True
+            if OWNER_FORCE_RESET:
+                owner.password_hash = hash_password(OWNER_PASSWORD)
+                owner.is_banned = False
+                owner.ban_reason = None
+                changed = True
+            if changed:
+                db.commit()
 
 
 limiter = Limiter(key_func=get_remote_address, default_limits=[])
@@ -289,6 +313,102 @@ def change_password(
     return {"ok": True}
 
 
+# ---------------- Password change permissions (target side) ----------------
+#
+# Workflow:
+#   1. Dev/Owner grants permission via /api/admin/users/{id}/password-permission
+#   2. Target user polls /api/auth/password-permission and sees a banner
+#   3. Target accepts (and supplies the new password themselves) or declines
+#
+# The admin never sees or chooses the new password. Permissions auto-expire.
+
+
+def _expire_pending_permissions(db: Session) -> None:
+    """Mark stale pending permissions as 'expired' so banners don't linger."""
+    now = utcnow()
+    rows = (
+        db.execute(
+            select(PasswordChangePermission).where(
+                PasswordChangePermission.status == "pending",
+                PasswordChangePermission.expires_at < now,
+            )
+        )
+        .scalars()
+        .all()
+    )
+    if not rows:
+        return
+    for row in rows:
+        row.status = "expired"
+        row.resolved_at = now
+    db.commit()
+
+
+def _active_permission_for(db: Session, user_id: int) -> PasswordChangePermission | None:
+    return (
+        db.execute(
+            select(PasswordChangePermission)
+            .where(
+                PasswordChangePermission.target_user_id == user_id,
+                PasswordChangePermission.status == "pending",
+            )
+            .order_by(PasswordChangePermission.created_at.desc())
+            .limit(1)
+        )
+        .scalar_one_or_none()
+    )
+
+
+@app.get("/api/auth/password-permission", response_model=schemas.PasswordPermissionOut | None)
+def get_my_password_permission(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    _expire_pending_permissions(db)
+    perm = _active_permission_for(db, user.id)
+    if perm is None:
+        return None
+    return schemas.PasswordPermissionOut.model_validate(perm)
+
+
+@app.post("/api/auth/password-permission/accept")
+def accept_password_permission(
+    payload: schemas.PasswordPermissionAcceptIn,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    _expire_pending_permissions(db)
+    perm = _active_permission_for(db, user.id)
+    if perm is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "No active password change permission for this account.",
+        )
+    user.password_hash = hash_password(payload.new_password)
+    perm.status = "accepted"
+    perm.resolved_at = utcnow()
+    db.commit()
+    return {"ok": True}
+
+
+@app.post("/api/auth/password-permission/decline")
+def decline_password_permission(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    _expire_pending_permissions(db)
+    perm = _active_permission_for(db, user.id)
+    if perm is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "No active password change permission for this account.",
+        )
+    perm.status = "declined"
+    perm.resolved_at = utcnow()
+    db.commit()
+    return {"ok": True}
+
+
 # ---------------- Public state ----------------
 
 
@@ -348,12 +468,12 @@ def download_monolit(
 ):
     state = db.execute(select(LauncherState).limit(1)).scalar_one()
     _download_check(state, user, slot="monolit")
-    if not MONOLIT_LITE_JAR.exists():
+    if not MONOLIT_CLIENT_JAR.exists():
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Build artifact missing.")
     return FileResponse(
-        MONOLIT_LITE_JAR,
+        MONOLIT_CLIENT_JAR,
         media_type="application/java-archive",
-        filename="MonoLit-Lite-1.0.2A.jar",
+        filename="MonoLitClient-1.2.A.jar",
     )
 
 
@@ -522,6 +642,104 @@ def delete_user(
     if target.role == "Owner":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Owners cannot be deleted.")
     db.delete(target)
+    db.commit()
+    return {"ok": True}
+
+
+# ---------------- Password change permissions (admin side) ----------------
+
+
+def _admin_perm_response(perm: PasswordChangePermission) -> dict:
+    return {
+        "id": perm.id,
+        "target_user_id": perm.target_user_id,
+        "status": perm.status,
+        "granted_by_username": perm.granted_by_username,
+        "granted_by_role": perm.granted_by_role,
+        "created_at": perm.created_at.isoformat(),
+        "expires_at": perm.expires_at.isoformat(),
+        "resolved_at": perm.resolved_at.isoformat() if perm.resolved_at else None,
+    }
+
+
+@app.get("/api/admin/users/{user_id}/password-permission")
+def get_user_password_permission(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_role("Dev", "Owner")),
+):
+    _expire_pending_permissions(db)
+    target = db.get(User, user_id)
+    if target is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found.")
+    latest = (
+        db.execute(
+            select(PasswordChangePermission)
+            .where(PasswordChangePermission.target_user_id == user_id)
+            .order_by(PasswordChangePermission.created_at.desc())
+            .limit(1)
+        )
+        .scalar_one_or_none()
+    )
+    if latest is None:
+        return None
+    return _admin_perm_response(latest)
+
+
+@app.post("/api/admin/users/{user_id}/password-permission")
+def grant_password_permission(
+    user_id: int,
+    db: Session = Depends(get_db),
+    actor: User = Depends(require_role("Dev", "Owner")),
+):
+    target = db.get(User, user_id)
+    if target is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found.")
+    # Role hierarchy: Owner can issue to anyone (including other Owners).
+    # Dev can only issue to plain Users.
+    if actor.role == "Dev" and target.role in {"Dev", "Owner"}:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Dev accounts can only issue password resets to regular users.",
+        )
+    _expire_pending_permissions(db)
+    existing = _active_permission_for(db, user_id)
+    if existing is not None:
+        # Idempotent: return the live permission instead of stacking duplicates.
+        return _admin_perm_response(existing)
+    perm = PasswordChangePermission(
+        target_user_id=target.id,
+        granted_by_user_id=actor.id,
+        granted_by_username=actor.username,
+        granted_by_role=actor.role,
+        status="pending",
+        expires_at=utcnow() + timedelta(minutes=PERMISSION_TTL_MINUTES),
+    )
+    db.add(perm)
+    db.commit()
+    db.refresh(perm)
+    return _admin_perm_response(perm)
+
+
+@app.delete("/api/admin/users/{user_id}/password-permission")
+def revoke_password_permission(
+    user_id: int,
+    db: Session = Depends(get_db),
+    actor: User = Depends(require_role("Dev", "Owner")),
+):
+    target = db.get(User, user_id)
+    if target is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found.")
+    if actor.role == "Dev" and target.role in {"Dev", "Owner"}:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Dev accounts cannot manage password resets for staff.",
+        )
+    perm = _active_permission_for(db, user_id)
+    if perm is None:
+        return {"ok": True}
+    perm.status = "revoked"
+    perm.resolved_at = utcnow()
     db.commit()
     return {"ok": True}
 

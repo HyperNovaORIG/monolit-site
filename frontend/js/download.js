@@ -143,9 +143,9 @@
   $("#btn-download-monolit")?.addEventListener("click", async () => {
     openModal("#download-modal");
     try {
-      await fakeProgress("Preparing MonoLit Lite…", "Pulling MonoLit-Lite-1.0.2A.jar from the server.", 1200);
-      await downloadFile("monolit", "MonoLit-Lite-1.0.2A.jar");
-      localToast("MonoLit Lite downloaded.", "ok", 4500);
+      await fakeProgress("Preparing MonoLit Client…", "Pulling MonoLitClient-1.2.A.jar from the server.", 1200);
+      await downloadFile("monolit", "MonoLitClient-1.2.A.jar");
+      localToast("MonoLit Client downloaded.", "ok", 4500);
     } catch (err) {
       localToast(err.message, "err", 5000);
     } finally {

@@ -605,7 +605,7 @@
           <h3 class="pixel" style="font-size:13px;margin-bottom:14px;color:var(--gold);">Per-mod download switches</h3>
           <p style="font-size:16px;color:var(--text-dim);margin-bottom:10px;">Block individual files without taking the whole site down. Master switch (above) overrides these.</p>
           <div style="display:flex;flex-direction:column;gap:10px;font-size:18px;">
-            <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-monolit" style="width:auto;" /> MonoLit Lite (.jar) download enabled</label>
+            <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-monolit" style="width:auto;" /> MonoLit Client (.jar) download enabled</label>
             <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-fabric" style="width:auto;" /> fabric-1.21.11.jar download enabled</label>
             <label style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="ls-express" style="width:auto;" /> Express download enabled</label>
             <div><button class="mc-btn primary" id="ls-save-mods">Save downloads</button></div>
@@ -704,6 +704,42 @@
         </label>
         <div class="alert" id="profile-alert"></div>
         <button class="mc-btn primary" type="submit" style="margin-top:12px;">Update password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PASSWORD-CHANGE PERMISSION MODAL (target user sees this) -->
+  <div class="modal" id="pwdperm-modal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2>Password change request</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:14px;">
+        <strong id="pwdperm-grantor">Someone</strong>
+        <span class="role" id="pwdperm-grantor-role">Staff</span>
+        has approved a password change for your account. You can set a new
+        password right now, or decline this request — your current password
+        keeps working either way.
+      </p>
+      <div id="pwdperm-stage-decision">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="mc-btn primary" id="pwdperm-accept">Yes, set a new password</button>
+          <button class="mc-btn redstone" id="pwdperm-decline">No, keep current password</button>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:12px;">
+          Request expires <strong id="pwdperm-expires">soon</strong>. You will not lose access if you ignore it.
+        </p>
+      </div>
+      <form id="form-pwdperm-set" hidden>
+        <label class="field" style="margin-top:8px;"><span>New password (min 6)</span>
+          <input type="password" name="new_password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Confirm new password</span>
+          <input type="password" name="confirm_password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <div class="alert" id="pwdperm-alert"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="mc-btn primary" type="submit">Set new password</button>
+          <button class="mc-btn" type="button" id="pwdperm-cancel">Cancel</button>
+        </div>
       </form>
     </div>
   </div>

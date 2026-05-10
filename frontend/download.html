@@ -76,12 +76,12 @@
         <h2 class="dl-express-title">One click. Everything you need.</h2>
         <p class="dl-express-sub">
           Saves <strong>MonoLit.rar</strong> — a single archive packed with the
-          <strong>MonoLit Lite</strong> mod, the <strong>fabric-1.21.11.jar</strong>
+          <strong>MonoLit Client</strong> mod, the <strong>fabric-1.21.11.jar</strong>
           loader and the matching <strong>Fabric API</strong> jar for 1.21.11.
           Unpack into your <code>mods/</code> folder and you're done.
         </p>
         <ul class="dl-express-list">
-          <li><span class="dl-bullet">①</span> MonoLit-Lite-1.0.2A.jar <span class="dl-size">included</span></li>
+          <li><span class="dl-bullet">①</span> MonoLitClient-1.2.A.jar <span class="dl-size">included</span></li>
           <li><span class="dl-bullet">②</span> fabric-1.21.11.jar <span class="dl-size">included</span></li>
           <li><span class="dl-bullet">③</span> Fabric API for 1.21.11 <span class="dl-size">included</span></li>
         </ul>
@@ -111,10 +111,10 @@
               <rect x="14" y="50" width="36" height="2" fill="#2d6618"/>
             </svg>
           </div>
-          <h3>MonoLit Lite</h3>
-          <p class="dl-card-sub">v1.0.2A · Java 21 · Fabric 1.21.11</p>
+          <h3>MonoLit Client</h3>
+          <p class="dl-card-sub">v1.2.A · Java 21 · Fabric 1.21.11</p>
           <div class="dl-card-meta">
-            <span>23,940 bytes</span>
+            <span>24,252 bytes</span>
             <span>Free</span>
           </div>
           <button class="mc-btn primary" id="btn-download-monolit">Download MonoLit (.jar)</button>
@@ -257,7 +257,7 @@
               <div class="ig-scene-title">Step 3 · Drop all 3 jars into <code>mods/</code></div>
               <div class="ig-scene-body ig-drag-scene">
                 <div class="ig-jars">
-                  <div class="ig-jar ig-jar-monolit"><span class="ig-jar-label">MonoLit-Lite-1.0.2A.jar</span></div>
+                  <div class="ig-jar ig-jar-monolit"><span class="ig-jar-label">MonoLitClient-1.2.A.jar</span></div>
                   <div class="ig-jar ig-jar-fabric"><span class="ig-jar-label">fabric-1.21.11.jar</span></div>
                   <div class="ig-jar ig-jar-api"><span class="ig-jar-label">fabric-api-0.X+1.21.11.jar</span></div>
                 </div>
@@ -430,6 +430,42 @@
       <div class="loader-bar"><div class="fill" id="dl-fill"></div></div>
       <div class="loader-pct" id="dl-pct">0%</div>
       <div class="loader-step" id="dl-step">Connecting to mirror…</div>
+    </div>
+  </div>
+
+  <!-- PASSWORD-CHANGE PERMISSION MODAL (target user sees this) -->
+  <div class="modal" id="pwdperm-modal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2>Password change request</h2>
+      <p style="font-size:18px;color:var(--text-dim);margin-bottom:14px;">
+        <strong id="pwdperm-grantor">Someone</strong>
+        <span class="role" id="pwdperm-grantor-role">Staff</span>
+        has approved a password change for your account. You can set a new
+        password right now, or decline this request — your current password
+        keeps working either way.
+      </p>
+      <div id="pwdperm-stage-decision">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="mc-btn primary" id="pwdperm-accept">Yes, set a new password</button>
+          <button class="mc-btn redstone" id="pwdperm-decline">No, keep current password</button>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);margin-top:12px;">
+          Request expires <strong id="pwdperm-expires">soon</strong>. You will not lose access if you ignore it.
+        </p>
+      </div>
+      <form id="form-pwdperm-set" hidden>
+        <label class="field" style="margin-top:8px;"><span>New password (min 6)</span>
+          <input type="password" name="new_password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <label class="field" style="margin-top:10px;"><span>Confirm new password</span>
+          <input type="password" name="confirm_password" required minlength="6" maxlength="128" autocomplete="new-password" />
+        </label>
+        <div class="alert" id="pwdperm-alert"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="mc-btn primary" type="submit">Set new password</button>
+          <button class="mc-btn" type="button" id="pwdperm-cancel">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
